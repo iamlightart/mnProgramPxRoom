@@ -1,0 +1,23 @@
+.adsBannerWide {
+  width: 700px;
+  height: 208px;
+  overflow: hidden;
+  position: relative;
+  background: url('../../assets/common/ads_banner_wide.svg');
+  background-size: 105% 105%;
+  background-position: center;
+  border-radius: 24px;
+}
+
+.adsBannerNarrow {
+  width: 700px;
+  height: 118px;
+  overflow: hidden;
+  position: relative;
+
+  background: url('../../assets/common/ads_banner_narrow.svg');
+  
+  background-size: 105% 105%;
+  background-position: center;
+  border-radius: 24px;
+}

@@ -1,0 +1,97 @@
+.login-wrap{
+  width: 100%;
+  background: #fdd835;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.circle{
+  width: 129px;
+  height: 129px;
+  border-radius: 50%;
+  background: rgba(255,255,255,1);
+  opacity: .5;
+  position: absolute;
+  left: -30px;
+}
+.form-top-circle{
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: .6;
+  position: absolute;
+  left: 175px;
+  top: 28px;
+}
+.title-pic{
+  position: absolute;
+  width: 400px;
+  height: 80px;
+  left: 40px;
+  top: 150px;
+}
+.top-logo{
+  width: 260px;
+  height: 340px;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 42px;
+}
+.content-wrap{
+  width: 700px;
+  height: 800px;
+  display: flex;
+  margin-top: 260px;
+}
+
+.form-box{
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 90px;
+  box-shadow: 5px 10px 5px rgba(255, 109, 0,.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-form{
+  margin-top: 50px;
+}
+.input-box{
+  border-top: none;
+  border-bottom: solid 1px #FF7600;
+}
+.login-btn{
+  margin-top: 70px;
+}
+.wx-login{
+  margin-top: 29px;
+}
+.form-hint{
+  margin-top:65px;
+  font-size: 22px;
+  line-height: 38px;
+}
+.protocol-link{
+  color: #FF6D00;
+  white-space: nowrap;
+}
+.hintMsg{
+  color: #FF6D00;
+}
+
+.bottom-box{
+  width: 700px;
+  position: absolute;
+  bottom: 0px;
+  .bottom-logo{
+    width: 100%;
+    height: 100px;
+  }
+}
