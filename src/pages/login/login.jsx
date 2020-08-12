@@ -4,8 +4,8 @@ import welcomeText from "@/assets/login/welcome_text.svg";
 import bottomLogo from "@/assets/login/login_bottom_logo.svg";
 import { AtButton, AtForm, AtInput } from "taro-ui";
 import { View, Image, Text } from "@tarojs/components";
-import { setGlobalData } from "@/store/global_data";
-import { phoneAuthCode } from "@/globalApi/index";
+import { phoneAuthCode, queryUserInfo } from "@/globalApi/index";
+import { decodePhoneNumber, enterInfo } from "./serviceApi";
 
 import "./login.scss";
 
@@ -27,9 +27,13 @@ class Login extends Component {
     // _mytimer 通过this加在构造器上
     this._mytimer;
   }
-
-  setToken(value) {
-    setGlobalData("token", value);
+componentWillMount() {
+    // queryUserInfo().then(({ data }) => {
+    //   if (data) {
+    //     Taro.setStorageSync("currentUserInfo", data);
+    //     Taro.redirectTo({ url: "/pages/index/index" });
+    //   }
+    // });
   }
   accountChange(value) {
     if (!value) return;
@@ -48,16 +52,6 @@ class Login extends Component {
       disableLogin: !(value.length === 6 && this.state.account.length === 11)
     });
     return value;
-  }
-  wxLogin(e) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    // const _selfe = this;
-    // const oldState = this.state;
-    // this.setState({
-    //   ...oldState,
-    //   loading: true
-    // });
-    console.log("微信login", e);
   }
   checkedProtocol() {
     Taro.navigateTo({
@@ -109,12 +103,65 @@ class Login extends Component {
   }
 
   getPhoneNumber(e) {
-    console.log("事件对象", e);
-    console.log("xxx");
+    this.setState({
+      ...this.state,
+      loading: true
+    });
+    const { encryptedData, iv } = e.detail;
+    try {
+      if (encryptedData && iv) {
+        decodePhoneNumber({ encryptedData, iv }).then(() => {
+          this.setState({
+            ...this.state,
+            loading: false
+          });
+          // const {phoneNumber} = data
+          // enterInfo()
+        });
+      }
+    } finally {
+      this.setState({
+        ...this.state,
+        loading: false
+      });
+    }
   }
+  getWxuserMsg(e) {
+    const { disableLogin } = this.state;
+    if (disableLogin) {
+      Taro.showToast({
+        title: "账号或密码不能为空！",
+        icon: "none"
+      });
+      return;
+    }
+    const { userInfo } = e.detail;
+    if (userInfo) {
+      const { account, password } = this.state;
+      const { nickName, avatarUrl, gender } = userInfo;
+      let param = {
+        tel: account,
+        smsCode: password,
+        nickName,
+        avatar: avatarUrl,
+        sex: gender,
+        type: 1
+      };
 
+      enterInfo(param).then(({data}) => {
+        if(data){
+          Taro.setStorageSync("currentUserInfo", data);
+          Taro.redirectTo({ url: "/pages/index/index" });
+          Taro.navigateTo({
+            url: "/pages/index/index"
+          });
+        }
+       
+      });
+    }
+  }
   render() {
-    const { count, hasAuthCode, disableLogin } = this.state;
+    const { count, hasAuthCode } = this.state;
     let windowHeightStyle = `height:${Taro.getSystemInfoSync().windowHeight}px`;
     return (
       <View className='login-wrap' style={windowHeightStyle}>
@@ -160,10 +207,11 @@ class Login extends Component {
                 onChange={this.passwordChange.bind(this)}
               />
               <AtButton
-                formType='submit'
+                circle
                 full
-                disabled={disableLogin}
                 size='small'
+                openType='getUserInfo'
+                onGetUserInfo={this.getWxuserMsg.bind(this)}
                 className='login-btn center'
               >
                 同意协议并登录
@@ -175,7 +223,6 @@ class Login extends Component {
                 className='wx-login center'
                 loading={this.state.loading}
                 type='primary'
-                onClick={this.wxLogin.bind(this)}
                 onGetPhoneNumber={this.getPhoneNumber.bind(this)}
               >
                 微信一键登录

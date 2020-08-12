@@ -11,12 +11,6 @@ class FissionBanner extends Component {
       bannerType:0
     };
   }
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
-
-  componentWillUnmount() {}
-
   componentDidShow() {
     if(this.props.type==='narrow'){
       this.setState({
@@ -24,9 +18,6 @@ class FissionBanner extends Component {
       })
     }
   }
-
-  componentDidHide() {}
-
   gotoFissionPromotion = () => {
     Taro.navigateTo({ url: "/pages/ads/fission_promotion/fission_promotion" });
   };

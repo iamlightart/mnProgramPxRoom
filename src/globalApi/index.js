@@ -4,7 +4,8 @@ import request from "@/utils/request";
 export function getToken () {
   return request({
     url: '/hrms-rcmdapi/auth/token',
-    method: 'GET'
+    method: 'GET',
+    showLoading: true
   });
 }
 /*
@@ -15,19 +16,41 @@ export function getOpenId(param) {
   return request({
     url: "/hrms-rcmdapi/auth/openid",
     method: "POST",
-    showLoading:true,
+    showLoading: true,
     data: param
   });
 }
 /**
  * 手机号获取验证码
- * @param {tel} string
- * @param {type} number 1|2|3
+ * @param {string} tel
+ * @param {number} type 1|2|3
  */
 export function phoneAuthCode (param) {
   return request({
     url: '/hrms-rcmdapi/auth/send-code',
     method: 'POST',
+    showLoading: true,
     data:param
+  });
+}
+/**
+ * 获取用户微信信息信息
+ * @param {string} tel 
+ * @param {type} number 1|2|3
+ */
+export function queryUserInfo (param) {
+  return request({
+    url: '/hrms-rcmdapi/customer/cust-get',
+    method: 'POST',
+    showLoading: true,
+    data:param
+  });
+}
+// 解绑微信
+export function wxUnbind (param) {
+  return request({
+    url: '/hrms-rcmdapi/customer/cust-wx-unbind',
+    method: 'POST',
+    data: param
   });
 }

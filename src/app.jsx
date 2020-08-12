@@ -3,6 +3,7 @@ import Taro, { Component } from "@tarojs/taro";
 import { Provider } from "@tarojs/redux";
 import Index from "./pages/index";
 import configStore from "./store";
+import { getToken, getOpenId,queryUserInfo } from "./globalApi";
 import "./custom-theme.scss";
 import "./app.scss";
 
@@ -19,13 +20,15 @@ class App extends Component {
     super(props);
     this.config = {
       pages: [
+        "pages/ads/fission_promotion/fission_promotion",
         "pages/index/index",
         "pages/login/login",
         "pages/login/agreement",
         "pages/sugarcube_store/sugarcube_store_waterfall",
         "pages/my_sugarcube/my_sugarcube",
         "pages/my_sugarcube/sugarcube_rules",
-        "pages/ads/fission_promotion/fission_promotion",
+        
+        
         "pages/exchange_process/confirm_exchange",
         "pages/exchange_process/exchange_rules",
         "pages/user_center/my_recommends",
@@ -41,7 +44,9 @@ class App extends Component {
       }
     };
   }
-
+  componentWillMount(){
+    this.getbaseMsg();
+  }
   componentDidMount() {}
 
   componentDidShow() {}
@@ -49,7 +54,40 @@ class App extends Component {
   componentDidHide() {}
 
   componentDidCatchError() {}
-
+  // get basics msg
+  async getbaseMsg() {
+    try {
+      const { keys = [] } = Taro.getStorageInfoSync();
+      if (!keys.includes("wxCode")) {
+        await Taro.login({
+          success: function({ code }) {
+            if (code) {
+              Taro.setStorageSync("wxCode", code);
+            }
+          }
+        });
+        await getToken().then(({ data }) => {
+          Taro.setStorageSync("passwordKey", data.iv);
+          Taro.setStorageSync("currentToken", data.token);
+        });
+        const code = Taro.getStorageSync("wxCode");
+        await getOpenId({ code }).then(({ data }) => {
+          Taro.setStorageSync("currentUserId", data.token.openid);
+        });
+        await queryUserInfo().then(({data})=>{
+          if(data){
+          Taro.setStorageSync("currentUserInfo", data);
+          Taro.redirectTo({ url: "/pages/index/index" });
+          }else{
+          Taro.redirectTo({ url: "/pages/login/login" });
+          }
+        })
+      }
+    } catch (e) {
+      console.log('错误信息',e)
+      Taro.showToast({ title: "网络异常 ，拉取数据失败",icon:"none" });
+    }
+  }
   // 在 App 类中的 render() 函数没有实际作用
   // 请勿修改此函数
   render() {

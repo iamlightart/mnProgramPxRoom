@@ -2,10 +2,11 @@ import Taro, { Component } from "@tarojs/taro";
 import { View } from "@tarojs/components";
 import { AtButton, AtInputNumber } from "taro-ui";
 import GoodsUnitRow from "@/components/sugarcube_store/goods_unit_row";
-import goodsImg1 from "@/assets/sugarcube_store/hair_dryer.png";
+
 import ParaDisplay from "@/components/common/para_display";
 import ExchangeRulesLink from "@/components/common/exchange_rules_link"
 import "./confirm_exchange.scss";
+import  queryGiftDetails from "./serviceExchangeApi";
 
 class ConfirmExchange extends Component {
   constructor(props) {
@@ -16,22 +17,26 @@ class ConfirmExchange extends Component {
     };
 
     this.state = {
-      value: 1
+      value: 1,
+      detailsData:{}
     };
   }
-
-  componentDidMount() {}
-
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
+  componentWillMount(){
+    const goodsId = this.$router.params.goodsID
+    this.queryData(goodsId)
   }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
+  queryData(id){
+    const param={
+      itemId:id
+    }
+    queryGiftDetails(param).then(({data})=>{
+      console.log('商品详情',data)
+      this.setState({
+        ...this.state,
+        detailsData:data
+      })
+    })
+  }
   handleChange = value => {
     this.setState({
       value
@@ -40,25 +45,18 @@ class ConfirmExchange extends Component {
 
 
   render() {
-    const hairDryerData = {
-      ID: 1,
-      type: "substance",
-      img: goodsImg1,
-      name: "Dyson戴森吹风机HD03",
-      value: "价值1399元",
-      price: "1000"
-    };
+    const {detailsData} = this.state
     return (
       <View className='contentWrap'>
         <View className='whiteBoard'>
           <GoodsUnitRow
             noBorderBottom
-            imgSrc={hairDryerData.img}
-            goodsID={hairDryerData.ID}
-            goodsType={hairDryerData.type}
-            goodsName={hairDryerData.name}
-            goodsValue={hairDryerData.value}
-            goodsPrice={hairDryerData.price}
+            imgSrc={detailsData.image}
+            goodsID={detailsData.itemId}
+            goodsType={detailsData.type}
+            goodsName={detailsData.name}
+            goodsValue={detailsData.content}
+            goodsPrice={detailsData.price}
             showExchangeBtn={false}
           ></GoodsUnitRow>
         </View>
@@ -73,7 +71,7 @@ class ConfirmExchange extends Component {
           <ParaDisplay
             title='兑换说明'
             content={
-              "1.兑换成功后，可在“我的兑换”中查看\n2.此商品每兑换1件将消耗20000方糖，兑换成功后方糖不予退还;\n有任何疑问，欢迎致电客服热线 "
+              `"1.兑换成功后，可在“我的兑换”中查看\n2.此商品每兑换1件将消耗${detailsData.price}方糖，兑换成功后方糖不予退还;\n有任何疑问，欢迎致电客服热线 "`
             }
           ></ParaDisplay>
         </View>

@@ -5,23 +5,6 @@ import rightArrowImg from "@/assets/common/right_arrow.svg";
 import "./sugarcube_btn.scss";
 
 class SugarcubeBtn extends Component {
-  constructor(props) {
-    super(props);
-    this.config = {};
-
-    this.state = {};
-  }
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {
-  }
-
-  componentDidHide() {}
-
   gotoMySugarcube = () => {
     Taro.navigateTo({ url: "/pages/my_sugarcube/my_sugarcube" });
   };
@@ -32,8 +15,8 @@ class SugarcubeBtn extends Component {
       <View className='surgarCubeBtn'  onClick={this.gotoMySugarcube}>
         
         <Image className='cubeBtnImg' src={cubeBtnImg} ></Image>
-        2000
         
+          {this.props.number}
         <Image className='rightArrow' src={rightArrowImg} ></Image>
       </View>
     );

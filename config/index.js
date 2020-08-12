@@ -12,7 +12,7 @@ const config = {
   sourceRoot: "src",
   outputRoot: "dist",
   babel: {
-    sourceMap: true,
+    sourceMap: false,
     presets: [
       [
         "env",
@@ -30,18 +30,24 @@ const config = {
         {
           helpers: false,
           polyfill: false,
-          regenerator: true,
+          regenerator: false,
           moduleName: "babel-runtime"
         }
       ]
     ]
+  },
+  terser: {
+    enable: true,
+    config: {
+      // 配置项同 https://github.com/terser/terser#minify-options
+    }
   },
   plugins: ["@tarojs/plugin-sass", "@tarojs/plugin-terser"],
   defineConstants: {},
   mini: {
     postcss: {
       autoprefixer: {
-        enable: true,
+        enable: false,
         config: {
           browsers: ["last 3 versions", "Android >= 4.1", "ios >= 8"]
         }
@@ -53,7 +59,7 @@ const config = {
       url: {
         enable: true,
         config: {
-          limit: 10240 // 设定转换尺寸上限
+          limit: 5*1024 // 设定转换尺寸上限
         }
       },
       cssModules: {
@@ -70,7 +76,7 @@ const config = {
     staticDirectory: "static",
     postcss: {
       autoprefixer: {
-        enable: true,
+        enable: false,
         config: {
           browsers: ["last 3 versions", "Android >= 4.1", "ios >= 8"]
         }

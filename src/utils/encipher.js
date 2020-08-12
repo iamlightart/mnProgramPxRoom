@@ -1,29 +1,31 @@
-// eslint-disable-next-line import/no-commonjs
-// const CryptoJS = require("crypto-js")
-// todo 不直接在环境内对加密实例化,性能很差
-const CryptoJS = null;
+
+import AES from "crypto-js/aes"
+import ENC from 'crypto-js/enc-utf8'
+import PAD from 'crypto-js/pad-pkcs7'
+// import MODE from 'crypto-js/mode'
+
 //  加密
 function encryptFactory(plaintext, key, iv) {
-  const _key = CryptoJS.enc.Utf8.parse(key);
-  const _iv = CryptoJS.enc.Utf8.parse(iv);
-  const source = CryptoJS.enc.Utf8.parse(JSON.stringify(plaintext));
-  const encrypted = CryptoJS.AES.encrypt(source, _key, {
+  const _key =ENC.parse(key);
+  const _iv = ENC.parse(iv);
+  const source =ENC.parse(JSON.stringify(plaintext));
+  const encrypted = AES.encrypt(source, _key, {
     iv: _iv,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7
+    // mode: MODE.CBC,
+    padding: PAD
   });
   return encrypted.toString();
 }
 //解密
 function decryptFactory(ciphertext, key, iv) {
-  const _key = CryptoJS.enc.Utf8.parse(key);
-  const _iv = CryptoJS.enc.Utf8.parse(iv);
-  const decrypt = CryptoJS.AES.decrypt(ciphertext, _key, {
+  const _key = ENC.parse(key);
+  const _iv =ENC.parse(iv);
+  const decrypt = AES.decrypt(ciphertext, _key, {
     iv: _iv,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7
+    // mode:MODE.CBC,
+    padding: PAD
   });
-  const decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
+  const decryptedStr = decrypt.toString(ENC);
   return decryptedStr.toString();
 }
 export { encryptFactory, decryptFactory };

@@ -1,5 +1,5 @@
 import Taro, { Component } from "@tarojs/taro";
-import { View } from "@tarojs/components";
+import { WebView } from "@tarojs/components";
 
 class ApartmentList extends Component {
   constructor(props) {
@@ -21,7 +21,10 @@ class ApartmentList extends Component {
 
   render() {
     return (
-      <View>ApartmentList</View>
+      <WebView
+        src='https://hrms.pixelroom.cn/tquery/#/'
+        onMessage={this.handleMessage}
+      />
     );
   }
 }

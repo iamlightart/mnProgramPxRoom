@@ -19,31 +19,13 @@ import GoodsUnitGrid from "./goods_unit_grid";
     showViewMoreLink: 是否展示查看更多连接，跳转进入“方糖商城”瀑布列表页。
     type='list': 商品以列表方式显示
     type='waterfall'商品以瀑布页方式显示
+    dataList 数据列表 [] 
   */
 
 class GoodsContainer extends Component {
   constructor(props) {
     super(props);
-    this.config = {};
-
-    this.state = {};
   }
-
-  componentDidMount() {}
-
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {
-  }
-
-  componentDidHide() {}
-
-  /*下面为自定义方法 */
-  // 方糖商城跳转
 
   gotoSugarcubeStore = () => {
     if(this.props.showViewMoreLink){
@@ -52,11 +34,9 @@ class GoodsContainer extends Component {
   };
 
   render() {
-    const numbers = [1, 2, 3, 4];
-
     const hairDryerData = {
       ID: 1,
-      type:'substance',
+      type:'substance', // 实体上坪
       img: goodsImg1,
       name: "Dyson戴森吹风机HD03",
       value: "价值1399元",
@@ -65,13 +45,13 @@ class GoodsContainer extends Component {
 
     const rentCouponData = {
       ID: 2,
-      type:'rent_coupon',
+      type:'rent_coupon', // 虚拟商品
       img: goodsImg2,
       name: "200元房租抵用券",
       value: "价值200元",
       price: "2000"
     };
-
+    const {dataList =[]} = this.props
     return (
       <View className='goodsContainer'>
         <View className='shopListHeader' onClick={this.gotoSugarcubeStore}>
@@ -90,16 +70,16 @@ class GoodsContainer extends Component {
         </View>
         {this.props.unitType === "list" &&
           //通过一个const数组直接循环显示列表，noBorderBottom进行末尾边界样式处理
-          numbers.map(number => (
+          dataList.map((item,index) => (
             <GoodsUnitRow
-              key={number}
-              noBorderBottom={number === numbers[numbers.length - 1]}
-              imgSrc={hairDryerData.img}
-              goodsID={hairDryerData.ID}
-              goodsType={hairDryerData.type}
-              goodsName={hairDryerData.name}
-              goodsValue={hairDryerData.value}
-              goodsPrice={hairDryerData.price}
+              key={item.itemId}
+              noBorderBottom={index === dataList.length - 1}
+              imgSrc={item.image}
+              goodsID={item.itemId}
+              goodsType={item.type}
+              goodsName={item.name}
+              goodsValue={item.content}
+              goodsPrice={item.price}
               showExchangeBtn
             ></GoodsUnitRow>
           ))}

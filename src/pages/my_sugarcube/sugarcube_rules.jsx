@@ -15,9 +15,9 @@ class SugarcubeRules extends Component {
 
   componentDidMount() {}
 
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   console.log(this.props, nextProps);
+  // }
 
   componentWillUnmount() {}
 

@@ -21,9 +21,9 @@ class MyRecommends extends Component {
 
   componentDidMount() {}
 
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   console.log(this.props, nextProps);
+  // }
 
   componentWillUnmount() {}
 
@@ -36,7 +36,6 @@ class MyRecommends extends Component {
   render() {
     let [wrapHeight, listHeight] = CommonUtils.getInstance().formatHeight(305);
     const recommendList = Array.from({ length: 20 }, (v, i) => i);
-    console.log(wrapHeight);
     return (
       <View className='contentWrap' style={wrapHeight}>
         <View className='fissionBannerWrap'>

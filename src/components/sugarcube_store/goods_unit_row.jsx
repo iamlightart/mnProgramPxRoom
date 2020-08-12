@@ -10,43 +10,23 @@ import "./goods_unit_row.scss";
 
 */
 class GoodsUnitRow extends Component {
-  constructor(props) {
-    super(props);
-    this.config = {};
-
-    this.state = {};
-  }
-
-  componentDidMount() {}
-
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {
-    console.log(this.props.goodsType);
-  }
-
-  componentDidHide() {}
-
+  
   /*下面为自定义方法 */
   confirmExchange = () => {
-    Taro.navigateTo({ url: "/pages/exchange_process/confirm_exchange" });
+  const {goodsID}=this.props
+    Taro.navigateTo({ url: "/pages/exchange_process/confirm_exchange?goodsID="+goodsID });
   };
-
+    
   render() {
     let noBorderBottom;
     if (this.props.noBorderBottom) {
       noBorderBottom = `border-bottom:#fff`;
     }
-
     return (
       <View className='goodsUnitRow' style={noBorderBottom}>
         <Image
           className='goodsImg'
-          src={"../.." + this.props.imgSrc}
+          src={this.props.imgSrc}
           mode='aspectFill'
         ></Image>
         <View className='goodsInfo'>

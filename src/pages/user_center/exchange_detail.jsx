@@ -8,22 +8,16 @@ class ExchangeDetail extends Component {
     this.config = {
       navigationStyle: "custom"
     };
-
-    this.state = {};
   }
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
+ 
+
+  componentWillUnmount() {
+    console.log('商品详情')
   }
 
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
 
   gotoCenter = () => {
     Taro.reLaunch({url:'/pages/index/index'})
-    // Taro.navigateBack();
   };
 
   render() {

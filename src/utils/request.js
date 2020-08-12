@@ -52,11 +52,11 @@ function request(param) {
       },
       url: baseUrl + url,
       success: function(res) {
-        if (res.statusCode === 200) {
+        if (res.statusCode === 200&&res.data.code=='000000') {
           resolve(res.data);
         } else {
           Taro.showToast({
-            title: res.data.message,
+            title: res.data.msg,
             icon: "none"
           });
           reject(res);

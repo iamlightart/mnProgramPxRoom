@@ -14,9 +14,9 @@ class UserInfo extends Component {
 
     this.state = {};
   }
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   console.log(this.props, nextProps);
+  // }
 
   componentWillUnmount() {}
 
