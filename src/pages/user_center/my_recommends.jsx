@@ -3,6 +3,7 @@ import { View, Text, Image } from "@tarojs/components";
 import { AtDivider, AtAvatar } from "taro-ui";
 import FissionBanner from "@/components/fission/fission_banner";
 import cubeBtnImg from "@/assets/common/cube_icon.svg";
+import muscleImg from "@/assets/common/muscle.svg"
 import CommonUtils from "@/utils/common_utils";
 import { totalRecommend,coustomerList } from "./userServiceApi";
 import "./my_recommends.scss";
@@ -76,7 +77,7 @@ class MyRecommends extends Component {
               lineColor='#E1E1E1'
             />
           </View>
-          <View className='myRecommendsListBody'>
+          {/* <View className='myRecommendsListBody'>
             <View className='listThRow'>
               <View className='listTh'></View>
               <View className='listTh'>好友名称</View>
@@ -104,6 +105,10 @@ class MyRecommends extends Component {
                 </View>
               ))}
             </View>
+          </View> */}
+          <View className='defaultContent'>
+            <Image src={muscleImg} className='defaultImg'></Image>
+            <Text className='defaultInfo'>暂时还未邀请朋友，继续加油咯~</Text>
           </View>
         </View>
       </View>
