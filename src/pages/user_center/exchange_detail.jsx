@@ -10,7 +10,7 @@ class ExchangeDetail extends Component {
     super(props);
     this.config = {
       navigationBarTitleText: "兑换详情",
-      navigationBarBackgroundColor: "#eeeeee"
+      navigationBarBackgroundColor: "#ffffff"
     };
 
     this.state = {
