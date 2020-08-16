@@ -14,7 +14,7 @@ class CommonUtils {
     let windowWidth = Taro.getSystemInfoSync().windowWidth;
     let wrapHeightStyle = `height:${windowHeight - 15}px`;
     let listHeightStyle = `height:${windowHeight -
-      (windowWidth / 375) * occupiedHeight}px`;
+      parseInt((windowWidth / 375) * occupiedHeight)}px`;
     return [wrapHeightStyle, listHeightStyle];
   };
 }
