@@ -47,8 +47,8 @@ function request(param) {
         ...header
       },
       method,
-      data: {
-        data: method === "POST" ? encryptFactory(data, token, _iv) : null
+      data:data&&{
+        data: method === "POST"?encryptFactory(data, token, _iv) : null
       },
       url: baseUrl + url,
       success: function(res) {
@@ -64,6 +64,7 @@ function request(param) {
       },
       fail: function(err) {
         reject(err);
+        console.log(err)
         Taro.showToast({
           title: "您的网络连接出现问题，请稍后刷新重试",
           icon: "none"

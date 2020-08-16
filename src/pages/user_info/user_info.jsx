@@ -1,7 +1,13 @@
 import Taro, { Component } from "@tarojs/taro";
-import { View, Button, Image } from "@tarojs/components";
-import { AtIcon } from "taro-ui";
-import avatarImg from "@/assets/user_center/avatar.jpg";
+import { View, Image, Button } from "@tarojs/components";
+import {
+  AtButton,
+  AtModal,
+  AtModalHeader,
+  AtModalContent,
+  AtModalAction
+} from "taro-ui";
+import { wxUnbind } from "@/globalApi/index";
 import "./user_info.scss";
 
 class UserInfo extends Component {
@@ -12,53 +18,104 @@ class UserInfo extends Component {
       navigationBarBackgroundColor: "#eeeeee"
     };
 
-    this.state = {};
+    this.state = {
+      userInfo: Taro.getStorageSync("currentUserInfo"),
+      showHintModal: false,
+      hintModalType: 1
+    };
   }
-  // componentWillReceiveProps(nextProps) {
-  //   console.log(this.props, nextProps);
-  // }
 
-  componentWillUnmount() {}
+  showUnbindWechatModal = () => {
+    this.setState({
+      showHintModal: true,
+      hintModalType: 1
+    });
+  };
 
-  componentDidShow() {}
+  showChangeNumberModal = () => {
+    this.setState({
+      showHintModal: true,
+      hintModalType: 0
+    });
+  };
 
-  componentDidHide() {}
+  hideHintModal = () => {
+    this.setState({
+      showHintModal: false
+    });
+  };
+  handleConfirm = () => {
+    if (this.state.hintModalType == 0) {
+      Taro.navigateTo({
+        url: `/pages/user_info/change_number?phoneNum=${this.state.userInfo.tel}`
+      });
+    } else if (this.state.hintModalType == 1) {
+      wxUnbind().then(res => {
+        console.log(res);
+        Taro.reLaunch({ url: "/pages/login/login" });
+      });
+    }
 
-  gotoCenter = () => {
-    Taro.reLaunch({url:'/pages/login/login'});
+    this.setState({
+      showHintModal: false
+    });
   };
 
   render() {
+    const { userInfo, showHintModal, hintModalType } = this.state;
     return (
-      <View className='surgarCubeBtn'>
+      <View>
+        <AtModal isOpened={showHintModal}>
+          <AtModalHeader>提示</AtModalHeader>
+          <AtModalContent className='modalContent'>
+            {hintModalType == 1
+              ? "这样操作会解绑微信，需要重新登录，确定吗？"
+              : "这样操作会换绑手机，确定吗？"}
+          </AtModalContent>
+          <AtModalAction>
+            <Button onClick={this.hideHintModal}>取消</Button>
+            <Button onClick={this.handleConfirm}>确定</Button>
+          </AtModalAction>
+        </AtModal>
+
         <View className='listWrap'>
           <View className='listItem'>
             <View className='itemKey'>头像</View>
             <View className='itemValue '>
-              <Image src={avatarImg} className='avatarImg'></Image>
+              <Image src={userInfo.avatar} className='avatarImg'></Image>
             </View>
           </View>
           <View className='listItem'>
             <View className='itemKey'>昵称</View>
-            <View className='itemValue'>
-              李西西啊
-              <AtIcon value='chevron-right' size='15' color='#9e9e9e'></AtIcon>
-            </View>
+            <View className='itemValue'>{userInfo.nickName}</View>
           </View>
           <View className='listItem'>
             <View className='itemKey'>性别</View>
             <View className='itemValue'>
-              女
-              <AtIcon value='chevron-right' size='15' color='#9e9e9e'></AtIcon>
+              {userInfo.sex === 1 ? "男" : "女"}
             </View>
           </View>
           <View className='listItem'>
             <View className='itemKey'>手机号</View>
-            <View className='itemValue'>18200291234</View>
+            <View className='itemValue'>{userInfo.tel}</View>
           </View>
         </View>
-        <Button>换绑手机</Button>
-        <Button onClick={this.gotoCenter}>退出登录</Button>
+        <View className='buttonWrap'>
+          <AtButton
+            className='userInfoBtn'
+            onClick={this.showChangeNumberModal}
+          >
+            换绑手机
+          </AtButton>
+        </View>
+        <View className='buttonWrap'>
+          <AtButton
+            onClick={this.showUnbindWechatModal}
+            className='userInfoBtn'
+          >
+            解绑微信
+          </AtButton>
+        </View>
       </View>
     );
   }

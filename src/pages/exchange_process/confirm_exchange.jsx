@@ -30,9 +30,7 @@ class ConfirmExchange extends Component {
       itemId:id
     }
     queryGiftDetails(param).then(({data})=>{
-      console.log('商品详情',data)
       this.setState({
-        ...this.state,
         detailsData:data
       })
     })
@@ -64,14 +62,14 @@ class ConfirmExchange extends Component {
         <View className='paraWrap'>
           <ParaDisplay
             title='奖品介绍'
-            content={"Dyson戴森吹风机HD03\n商品详情具体可参考京东在售同款"}
+            content={detailsData.content}
           ></ParaDisplay>
         </View>
         <View className='paraWrap'>
           <ParaDisplay
             title='兑换说明'
             content={
-              `"1.兑换成功后，可在“我的兑换”中查看\n2.此商品每兑换1件将消耗${detailsData.price}方糖，兑换成功后方糖不予退还;\n有任何疑问，欢迎致电客服热线 "`
+              `1.兑换成功后，可在“我的兑换”中查看\n2.此商品每兑换1件将消耗 ${detailsData.price} 方糖，兑换成功后方糖不予退还;\n有任何疑问，欢迎致电客服热线`
             }
           ></ParaDisplay>
         </View>

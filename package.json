@@ -30,18 +30,18 @@
 	"license": "MIT",
 	"dependencies": {
 		"@tarojs/components": "2.2.11",
-		"@tarojs/components-qa": "2.2.9",
-		"@tarojs/redux": "2.2.9",
-		"@tarojs/redux-h5": "2.2.9",
+		"@tarojs/components-qa": "2.2.11",
+		"@tarojs/redux": "2.2.11",
+		"@tarojs/redux-h5": "2.2.11",
 		"@tarojs/router": "2.2.11",
 		"@tarojs/taro": "2.2.11",
-		"@tarojs/taro-alipay": "2.2.9",
+		"@tarojs/taro-alipay": "2.2.11",
 		"@tarojs/taro-h5": "2.2.11",
-		"@tarojs/taro-qq": "2.2.9",
-		"@tarojs/taro-quickapp": "2.2.9",
-		"@tarojs/taro-swan": "2.2.9",
-		"@tarojs/taro-tt": "2.2.9",
-		"@tarojs/taro-weapp": "2.2.9",
+		"@tarojs/taro-qq": "2.2.11",
+		"@tarojs/taro-quickapp": "2.2.11",
+		"@tarojs/taro-swan": "2.2.11",
+		"@tarojs/taro-tt": "2.2.11",
+		"@tarojs/taro-weapp": "2.2.11",
 		"babel-runtime": "^6.26.0",
 		"crypto-js": "^4.0.0",
 		"nerv-devtools": "^1.5.7",
@@ -54,8 +54,8 @@
 	},
 	"devDependencies": {
 		"@tarojs/mini-runner": "2.2.11",
-		"@tarojs/plugin-sass": "2.2.9",
-		"@tarojs/plugin-terser": "2.2.9",
+		"@tarojs/plugin-sass": "2.2.11",
+		"@tarojs/plugin-terser": "2.2.11",
 		"@tarojs/webpack-runner": "2.2.11",
 		"@types/react": "^16.4.8",
 		"@types/webpack-env": "^1.13.6",
@@ -73,7 +73,7 @@
 		"eslint-plugin-react-hooks": "^1.6.1",
 		"eslint-plugin-taro": "2.2.11",
 		"stylelint": "9.3.0",
-		"stylelint-config-taro-rn": "2.2.9",
-		"stylelint-taro-rn": "2.2.9"
+		"stylelint-config-taro-rn": "2.2.11",
+		"stylelint-taro-rn": "2.2.11"
 	}
 }

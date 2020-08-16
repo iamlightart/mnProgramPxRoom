@@ -20,20 +20,19 @@ class App extends Component {
     super(props);
     this.config = {
       pages: [
-        "pages/ads/fission_promotion/fission_promotion",
-        "pages/index/index",
-        "pages/login/login",
-        "pages/login/agreement",
-        "pages/sugarcube_store/sugarcube_store_waterfall",
-        "pages/my_sugarcube/my_sugarcube",
-        "pages/my_sugarcube/sugarcube_rules",
-        
-        
-        "pages/exchange_process/confirm_exchange",
-        "pages/exchange_process/exchange_rules",
-        "pages/user_center/my_recommends",
-        "pages/user_center/my_exchange",
-        "pages/user_info/user_info"
+        // "pages/login/login",
+        // "pages/sugarcube_store/sugarcube_store_waterfall",
+        // "pages/index/index",        
+        // "pages/login/agreement",
+        // "pages/my_sugarcube/my_sugarcube",
+        // "pages/my_sugarcube/sugarcube_rules",
+        // "pages/ads/fission_promotion/fission_promotion",        
+        // "pages/exchange_process/confirm_exchange",
+        // "pages/exchange_process/exchange_rules",
+        // "pages/user_center/my_recommends",
+        // "pages/user_center/my_exchange",
+        "pages/user_info/user_info",
+        "pages/user_info/change_number"
       ],
       window: {
         backgroundTextStyle: "light",

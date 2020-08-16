@@ -22,6 +22,7 @@ class GoodsUnitRow extends Component {
     if (this.props.noBorderBottom) {
       noBorderBottom = `border-bottom:#fff`;
     }
+    const {goodsName,goodsPrice,showExchangeBtn,goodsValue=''} = this.props
     return (
       <View className='goodsUnitRow' style={noBorderBottom}>
         <Image
@@ -30,15 +31,15 @@ class GoodsUnitRow extends Component {
           mode='aspectFill'
         ></Image>
         <View className='goodsInfo'>
-          <View className='goodsName'>{this.props.goodsName}</View>
-          <View className='goodsValue'>{this.props.goodsValue}</View>
+          <View className='goodsName'>{goodsName}</View>
+          <View className='goodsValue'>{goodsValue.substring(0,10)}</View>
           <View className='goodsPriceWrap'>
-            <View className='goodsPrice'>{this.props.goodsPrice}</View>
+            <View className='goodsPrice'>{goodsPrice}</View>
             <Image src={cubeBtnImg} className='cubeBtnImg'></Image>
           </View>
         </View>
         <View className='exchangeBtnWrap'>
-          <View hidden={!this.props.showExchangeBtn}>
+          <View hidden={!showExchangeBtn}>
             <AtButton
               className='exchangeBtn'
               size='small'

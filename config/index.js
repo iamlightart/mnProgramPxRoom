@@ -1,4 +1,4 @@
-const path = require("path");
+import path from "path";
 
 const config = {
   projectName: "pxp_mini_pro",
@@ -12,7 +12,7 @@ const config = {
   sourceRoot: "src",
   outputRoot: "dist",
   babel: {
-    sourceMap: false,
+    sourceMap: true,
     presets: [
       [
         "env",
@@ -36,18 +36,12 @@ const config = {
       ]
     ]
   },
-  terser: {
-    enable: true,
-    config: {
-      // 配置项同 https://github.com/terser/terser#minify-options
-    }
-  },
   plugins: ["@tarojs/plugin-sass", "@tarojs/plugin-terser"],
   defineConstants: {},
   mini: {
     postcss: {
       autoprefixer: {
-        enable: false,
+        enable: true,
         config: {
           browsers: ["last 3 versions", "Android >= 4.1", "ios >= 8"]
         }
@@ -76,7 +70,7 @@ const config = {
     staticDirectory: "static",
     postcss: {
       autoprefixer: {
-        enable: false,
+        enable: true,
         config: {
           browsers: ["last 3 versions", "Android >= 4.1", "ios >= 8"]
         }

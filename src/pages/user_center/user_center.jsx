@@ -32,7 +32,6 @@ class UserCenter extends Component {
   componentWillMount(){
     queryHotGift().then(({data})=>{
       this.setState({
-        ...this.state,
         hotList:data||[]
       })
     })
@@ -63,7 +62,7 @@ class UserCenter extends Component {
       <View className='contentWrap'>
         <View className='headerBannerImg'></View>
         <ButlerModal
-          showButerDialog={this.state.showButlerDialog}
+          showDialog={this.state.showButlerDialog}
           ref={this.butlerDialog}
         ></ButlerModal>
         <View className='userBanner'>

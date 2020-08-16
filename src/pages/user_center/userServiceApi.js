@@ -8,11 +8,27 @@ export function queryHotGift () {
     method: 'POST',
   });
 }
-// 解绑微信
-export function wUnbind (param) {
+// 兑换列表
+export function queryRedeemList (param) {
   return request({
-    url: '/hrms-rcmdapi/customer/cust-wx-unbind',
+    url: '/hrms-rcmdapi/customer/cust-redeem-list',
     method: 'POST',
-    data: param
+    data:param
   });
 }
+// 推荐汇总
+export function totalRecommend () {
+  return request({
+    url: '/hrms-rcmdapi/customer/cust-recommend-statistics',
+    method: 'POST',
+  });
+}
+// 我的推荐列表
+export function coustomerList (param) {
+  return request({
+    url: '/hrms-rcmdapi/customer/cust-recommend-list',
+    method: 'POST',
+    data:param
+  });
+}
+

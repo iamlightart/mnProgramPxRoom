@@ -2,7 +2,7 @@ import Taro, { Component } from "@tarojs/taro";
 import { View, Image, Text, Picker } from "@tarojs/components";
 import { AtIcon, AtModal, AtModalHeader, AtModalContent } from "taro-ui";
 import buterDialog from "@/assets/user_center/butler_dialog.svg";
-import butlerQR from "@/assets/user_center/butlerQR.jpg";
+import { queryHousekeeper } from "@/globalApi/index";
 import "./butler_modal.scss";
 
 class ButlerModal extends Component {
@@ -13,41 +13,45 @@ class ButlerModal extends Component {
       backgroundColor: "#eeeeee"
     };
     this.state = {
-      addressSelector: ["中德英伦联邦1栋3单元1238-D", "育才竹岛2栋2单元202-A"],
-      addressSelectorChecked: "中德英伦联邦1栋3单元1238-D",
-      showDialog: this.props.showButerDialog
+      currentIndex:0,
+      addressSelectorChecked: {},
+      stewardList:[],
+      showButlerDialog: this.props.showDialog
     };
   }
-  componentDidMount() {}
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-    this.setState({
-      showDialog: nextProps.showButerDialog
-    });
-    // this.props.parent.hideButerDialog();
+  componentWillMount(){
+    this.queryListData()
   }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      showButlerDialog: nextProps.showDialog
+    });
+  }
   hideButerDialog = () => {
     this.setState({
-      showDialog: false
+      showButlerDialog: false
     });
   };
 
   onAddressChange = e => {
     this.setState({
-      addressSelectorChecked: this.state.addressSelector[e.detail.value]
+      addressSelectorChecked: this.state.stewardList[e.detail.value],
+      currentIndex:Number(e.detail.value)
     });
   };
-
+  queryListData(){
+    queryHousekeeper().then(({data})=>{
+      this.setState({
+        stewardList:data,
+        currentIndex:0,
+        addressSelectorChecked:data[0]
+      })
+    })
+  }
   render() {
+    const{stewardList,showButlerDialog,addressSelectorChecked,currentIndex} = this.state
     return (
-      <AtModal isOpened={this.state.showDialog}>
+      <AtModal isOpened={showButlerDialog}>
         <View className='closeBtn' onClick={this.hideButerDialog}>
           <AtIcon value='close' size='14' color='#000'></AtIcon>
         </View>
@@ -59,12 +63,14 @@ class ButlerModal extends Component {
 
             <Picker
               mode='selector'
-              range={this.state.addressSelector}
+              rangeKey='houseName'
+              value={currentIndex}
+              range={stewardList}
               onChange={this.onAddressChange}
             >
               <View className='addressPicker'>
                 <View className='addressContent'>
-                  {this.state.addressSelectorChecked}
+                  {addressSelectorChecked.houseName}
                 </View>
                 <View className='toggleDown'>
                   <AtIcon
@@ -76,7 +82,7 @@ class ButlerModal extends Component {
               </View>
             </Picker>
 
-            <Image src={butlerQR} className='butlerQR'></Image>
+            <Image src={addressSelectorChecked.houseKeeperQrcode} className='butlerQR'></Image>
             <Text className='hintInfo'>长按保存图片\n您的管家微信二维码</Text>
           </View>
         </AtModalContent>

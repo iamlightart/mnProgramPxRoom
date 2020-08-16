@@ -2,9 +2,9 @@ import Taro, { Component } from "@tarojs/taro";
 import { View, Text, Image } from "@tarojs/components";
 import { AtDivider, AtAvatar } from "taro-ui";
 import FissionBanner from "@/components/fission/fission_banner";
-import avatarImg from "@/assets/user_center/avatar.jpg";
 import cubeBtnImg from "@/assets/common/cube_icon.svg";
 import CommonUtils from "@/utils/common_utils";
+import { totalRecommend,coustomerList } from "./userServiceApi";
 import "./my_recommends.scss";
 
 class MyRecommends extends Component {
@@ -16,26 +16,45 @@ class MyRecommends extends Component {
       backgroundColor: "#eeeeee"
     };
 
-    this.state = {};
+    this.state = {
+      pageNo:1,
+      pageSize:100,
+      isloading:false,
+      isAll:false,
+      totalData:{},
+      recommendList:[]
+    };
   }
-
-  componentDidMount() {}
-
-  // componentWillReceiveProps(nextProps) {
-  //   console.log(this.props, nextProps);
-  // }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {
-    console.log(Taro.getSystemInfoSync());
+  componentWillMount(){
+    this.queryTotal()
+    this.queryBind()
   }
-
-  componentDidHide() {}
+  queryTotal(){
+    totalRecommend().then(({data})=>{
+      this.setState({
+        totalData:data
+      })
+    })
+  }
+  queryBind(){
+    const {pageNo,pageSize,recommendList} = this.state
+    this.setState({
+      isloading:true
+    })
+    coustomerList({pageSize,pageNo}).then(({data})=>{
+      const tempArry = recommendList.concat(data.list)
+      this.setState({
+        recommendList:tempArry,
+        isloading:false,
+        isAll:tempArry.length===data.totalCount
+      })
+        console.log('成功推荐的列表',data)
+    })
+  }
 
   render() {
     let [wrapHeight, listHeight] = CommonUtils.getInstance().formatHeight(305);
-    const recommendList = Array.from({ length: 20 }, (v, i) => i);
+    const {totalData,recommendList,isloading,isAll} = this.state
     return (
       <View className='contentWrap' style={wrapHeight}>
         <View className='fissionBannerWrap'>
@@ -43,9 +62,9 @@ class MyRecommends extends Component {
         </View>
         <View className='myRecommendsList'>
           <View className='myrecommendsListHeader'>
-            <Text className='headerFirstLine'>您已绑定XX人，成功推荐XX人</Text>
+    <Text className='headerFirstLine'>您已绑定{totalData.bindCount}人，成功推荐{totalData.signCount}人</Text>
             <View className='headerSecondLine'>
-              已累积获得 <View className='totalAcquire'>20000</View>
+    已累积获得 <View className='totalAcquire'>{totalData.incomeScore}</View>
               <Image src={cubeBtnImg} className='cubeBtnImg'></Image>
             </View>
           </View>
@@ -64,22 +83,24 @@ class MyRecommends extends Component {
               <View className='listTh'>联系电话</View>
               <View className='listTh'>是否签约</View>
             </View>
-
             <View className='listWrap' style={listHeight}>
-              {recommendList.map(number => (
-                <View className='listTdRow' key={number}>
+          {
+             !isloading&&isAll&&<View >defaule View</View> 
+          }
+              {recommendList.map(item => (
+                <View className='listTdRow' key={item.custId}>
                   <View className='listTd'>
                     <View className='avatarImgWrap'>
                       <AtAvatar
                         size='small'
                         circle
-                        image={avatarImg}
+                        image={item.targetAvatar}
                       ></AtAvatar>
                     </View>
                   </View>
-                  <View className='listTd'>李西西</View>
-                  <View className='listTd'>182****6606</View>
-                  <View className='listTd'>否</View>
+              <View className='listTd'>{item.targetName}</View>
+              <View className='listTd'>{item.targetTel.substring(0,3)+'****'+item.targetTel.substring(-1,4)}</View>
+              <View className='listTd'>{item.signFlag===1?'是':'否'}</View>
                 </View>
               ))}
             </View>

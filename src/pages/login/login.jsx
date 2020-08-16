@@ -4,7 +4,7 @@ import welcomeText from "@/assets/login/welcome_text.svg";
 import bottomLogo from "@/assets/login/login_bottom_logo.svg";
 import { AtButton, AtForm, AtInput } from "taro-ui";
 import { View, Image, Text } from "@tarojs/components";
-import { phoneAuthCode, queryUserInfo } from "@/globalApi/index";
+import { phoneAuthCode } from "@/globalApi/index";
 import { decodePhoneNumber, enterInfo } from "./serviceApi";
 
 import "./login.scss";
@@ -24,7 +24,6 @@ class Login extends Component {
       disableLogin: true,
       count: 60
     };
-    // _mytimer 通过this加在构造器上
     this._mytimer;
   }
 componentWillMount() {
@@ -38,7 +37,6 @@ componentWillMount() {
   accountChange(value) {
     if (!value) return;
     this.setState({
-      ...this.state,
       account: value,
       hasAuthCode: !(value.length === 11)
     });
@@ -47,7 +45,6 @@ componentWillMount() {
   passwordChange(value) {
     if (!value) return;
     this.setState({
-      ...this.state,
       password: value,
       disableLogin: !(value.length === 6 && this.state.account.length === 11)
     });
@@ -76,7 +73,6 @@ componentWillMount() {
         if (this._mytimer) {
           clearTimeout(this._mytimer);
           this.setState({
-            ...this.state,
             count: 60
           });
         }
@@ -87,13 +83,11 @@ componentWillMount() {
     if (value <= 0) {
       if (this._mytimer) clearTimeout(this._mytimer);
       this.setState({
-        ...this.state,
         count: 60
       });
       return;
     } else {
       this.setState({
-        ...this.state,
         count: value - 1
       });
       this._mytimer = setTimeout(() => {
@@ -104,7 +98,6 @@ componentWillMount() {
 
   getPhoneNumber(e) {
     this.setState({
-      ...this.state,
       loading: true
     });
     const { encryptedData, iv } = e.detail;
@@ -112,7 +105,6 @@ componentWillMount() {
       if (encryptedData && iv) {
         decodePhoneNumber({ encryptedData, iv }).then(() => {
           this.setState({
-            ...this.state,
             loading: false
           });
           // const {phoneNumber} = data
@@ -120,8 +112,8 @@ componentWillMount() {
         });
       }
     } finally {
+      console.log(e)
       this.setState({
-        ...this.state,
         loading: false
       });
     }
@@ -159,6 +151,7 @@ componentWillMount() {
        
       });
     }
+    console.log(e)
   }
   render() {
     const { count, hasAuthCode } = this.state;
@@ -187,11 +180,12 @@ componentWillMount() {
                     circle
                     disabled={hasAuthCode}
                     onClick={this.getAuthCode.bind(this)}
+                    className='getAuthCode'
                   >
                     获取验证码
                   </AtButton>
                 ) : (
-                  <AtButton size='small' circle className='hintMsg'>
+                  <AtButton size='small' circle className='hintMsg getAuthCode'>
                     {count}
                   </AtButton>
                 )}
@@ -207,12 +201,11 @@ componentWillMount() {
                 onChange={this.passwordChange.bind(this)}
               />
               <AtButton
-                circle
                 full
                 size='small'
                 openType='getUserInfo'
                 onGetUserInfo={this.getWxuserMsg.bind(this)}
-                className='login-btn center'
+                className='login-btn'
               >
                 同意协议并登录
               </AtButton>
@@ -220,7 +213,7 @@ componentWillMount() {
                 full
                 openType='getPhoneNumber'
                 size='small'
-                className='wx-login center'
+                className='wx-login'
                 loading={this.state.loading}
                 type='primary'
                 onGetPhoneNumber={this.getPhoneNumber.bind(this)}

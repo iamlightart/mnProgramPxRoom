@@ -8,13 +8,11 @@ import pixelLogo from "@/assets/ads/pixel_box_logo.svg";
 import utilBox from "@/assets/ads/gift_util_box.jpg";
 import weChartIcon from "@/assets/ads/weChart_icon.svg";
 import sharePic from "@/assets/sharen.png";
-import FissionModal from"@/components/common/fission_modal";
 import { AtButton, AtDivider } from "taro-ui";
 
+import "./fission_login.scss";
 
-import "./fission_promotion.scss";
-
-class FissionPromotion extends Component {
+class FissionLogin extends Component {
   constructor(props) {
     super(props);
     this.config = {
@@ -24,8 +22,9 @@ class FissionPromotion extends Component {
       // navigationStyle:"custom"
     };
     this.state = {
-      isLogin: Taro.getStorageSync("currentUserInfo"),
-      showModal:false
+      openModal: false,
+      isLogin: Taro.getStorageSync("currentUserInfo")
+      // isLogin:true
     };
   }
   onShareAppMessage(e) {
@@ -45,9 +44,7 @@ class FissionPromotion extends Component {
     });
   }
   showModal() {
-    this.setState({
-      showModal:true
-    })
+    console.log("点击了活动细则");
   }
   toLogin() {
     Taro.navigateTo({
@@ -57,10 +54,9 @@ class FissionPromotion extends Component {
 
   render() {
     const isLogin = this.state.isLogin;
-    // const { openModal } = this.state;showModal
+    // const { openModal } = this.state;
     return (
       <View className='page-wrap'>
-        <FissionModal showDialog={this.state.showModal}></FissionModal>
         <View className='top-content '>
           <Image className='top-bg-pic' src={bgCircle} />
           <Image className='top-text-pic' src={titleText} />
@@ -128,4 +124,4 @@ class FissionPromotion extends Component {
   }
 }
 
-export default FissionPromotion;
+export default FissionLogin;

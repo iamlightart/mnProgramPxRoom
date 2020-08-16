@@ -16,7 +16,7 @@ class Index extends Component {
     this.config = {
       navigationBarTitleText: "像素公寓",
       navigationBarBackgroundColor: "#fdd835",
-      backgroundColor:"#eeeeee"
+      backgroundColor: "#eeeeee"
       // navigationStyle:"custom"
     };
 
@@ -70,8 +70,6 @@ class Index extends Component {
           current={this.state.currentPage}
         />
       </View>
-
-      
     );
   }
 }

@@ -54,3 +54,11 @@ export function wxUnbind (param) {
     data: param
   });
 }
+// 获取签约账户的房源管家
+export function queryHousekeeper (param) {
+  return request({
+    url: '/hrms-rcmdapi/customer/cust-housekeeper',
+    method: 'POST',
+    data: param
+  });
+}
