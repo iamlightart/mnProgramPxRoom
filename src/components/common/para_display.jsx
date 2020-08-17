@@ -6,7 +6,7 @@ import "./para_display.scss";
 class ParaDisplay extends Component {
   
   gotoFissionPromotion = () => {
-    Taro.navigateTo({ url: "/pages/ads/fission_promotion/fission_promotion" });
+    Taro.navigateTo({ url: "/pages/ads/fission_promotion" });
   };
 
   render() {

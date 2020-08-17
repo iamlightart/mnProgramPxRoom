@@ -29,20 +29,16 @@ export function phoneAuthCode (param) {
   return request({
     url: '/hrms-rcmdapi/auth/send-code',
     method: 'POST',
-    showLoading: true,
     data:param
   });
 }
 /**
- * 获取用户微信信息信息
- * @param {string} tel 
- * @param {type} number 1|2|3
+ * 获取用户微信息
  */
 export function queryUserInfo (param) {
   return request({
     url: '/hrms-rcmdapi/customer/cust-get',
     method: 'POST',
-    showLoading: true,
     data:param
   });
 }

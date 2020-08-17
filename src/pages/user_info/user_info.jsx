@@ -1,5 +1,6 @@
 import Taro, { Component } from "@tarojs/taro";
 import { View, Image, Button } from "@tarojs/components";
+import { connect } from "@tarojs/redux";
 import {
   AtButton,
   AtModal,
@@ -8,8 +9,19 @@ import {
   AtModalAction
 } from "taro-ui";
 import { wxUnbind } from "@/globalApi/index";
+import { SAVE_USER_INFO} from "../../actions/globalActions";
 import "./user_info.scss";
 
+@connect(
+  ({ globalStore }) => ({
+    userInfo:globalStore.userInfo
+  }),
+  dispatch => ({
+    onSaveMsg(data) {
+      dispatch(SAVE_USER_INFO(data));
+    }
+  })
+)
 class UserInfo extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +31,6 @@ class UserInfo extends Component {
     };
 
     this.state = {
-      userInfo: Taro.getStorageSync("currentUserInfo"),
       showHintModal: false,
       hintModalType: 1
     };
@@ -50,19 +61,19 @@ class UserInfo extends Component {
         url: `/pages/user_info/change_number?phoneNum=${this.state.userInfo.tel}`
       });
     } else if (this.state.hintModalType == 1) {
-      wxUnbind().then(res => {
-        console.log(res);
+      wxUnbind().then(() => {
+        this.props.onSaveMsg('')
         Taro.reLaunch({ url: "/pages/login/login" });
       });
     }
-
     this.setState({
       showHintModal: false
     });
   };
 
   render() {
-    const { userInfo, showHintModal, hintModalType } = this.state;
+    const { showHintModal, hintModalType } = this.state;
+    const {userInfo} = this.props
     return (
       <View>
         <AtModal isOpened={showHintModal}>

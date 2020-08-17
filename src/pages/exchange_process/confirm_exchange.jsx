@@ -5,6 +5,7 @@ import GoodsUnitRow from "@/components/sugarcube_store/goods_unit_row";
 
 import ParaDisplay from "@/components/common/para_display";
 import ExchangeRulesLink from "@/components/common/exchange_rules_link"
+import ExchangeStartModal from "@/components/common/exchange_start_modal"
 import "./confirm_exchange.scss";
 import  queryGiftDetails from "./serviceExchangeApi";
 
@@ -18,7 +19,8 @@ class ConfirmExchange extends Component {
 
     this.state = {
       value: 1,
-      detailsData:{}
+      detailsData:{},
+      showStartDialog:false
     };
   }
   componentWillMount(){
@@ -40,12 +42,18 @@ class ConfirmExchange extends Component {
       value
     });
   };
+  showStartModal=()=>{
+    this.setState({
+      showStartDialog:true
+    })
+  }
 
 
   render() {
     const {detailsData} = this.state
     return (
       <View className='contentWrap'>
+        <ExchangeStartModal showDialog={this.state.showStartDialog}></ExchangeStartModal>
         <View className='whiteBoard'>
           <GoodsUnitRow
             noBorderBottom
@@ -85,7 +93,7 @@ class ConfirmExchange extends Component {
             />
           </View>
           <View className='confirmExchangeBtnWrap'>
-            <AtButton className='confirmExchangeBtn' full>
+            <AtButton className='confirmExchangeBtn' full onClick={this.showStartModal}>
               立即兑换
             </AtButton>
           </View>

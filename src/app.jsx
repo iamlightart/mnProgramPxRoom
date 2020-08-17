@@ -3,7 +3,7 @@ import Taro, { Component } from "@tarojs/taro";
 import { Provider } from "@tarojs/redux";
 import Index from "./pages/index";
 import configStore from "./store";
-import { getToken, getOpenId,queryUserInfo } from "./globalApi";
+import { getToken, getOpenId} from "./globalApi";
 import "./custom-theme.scss";
 import "./app.scss";
 
@@ -20,18 +20,22 @@ class App extends Component {
     super(props);
     this.config = {
       pages: [
-        // "pages/login/login",
-        // "pages/sugarcube_store/sugarcube_store_waterfall",
-        // "pages/index/index",        
-        // "pages/login/agreement",
-        // "pages/my_sugarcube/my_sugarcube",
-        // "pages/my_sugarcube/sugarcube_rules",
-        // "pages/ads/fission_promotion",        
-        // "pages/ads/fission_login",
-        // "pages/exchange_process/confirm_exchange",
-        // "pages/exchange_process/exchange_rules",
-        // "pages/user_center/my_recommends",
-        // "pages/user_center/my_exchange",
+        "pages/login/login",
+        "pages/sugarcube_store/sugarcube_store_waterfall",
+        "pages/index/index",        
+        "pages/login/agreement",
+        "pages/my_sugarcube/my_sugarcube",
+        "pages/my_sugarcube/sugarcube_rules",
+        "pages/ads/fission_promotion",        
+        "pages/ads/fission_login",
+        "pages/exchange_process/confirm_exchange",
+        "pages/exchange_process/exchange_rules",
+        // 实体奖品兑奖地址页
+        "pages/exchange_process/edit_address",
+        // 虚拟奖品银行信息填写
+        "pages/exchange_process/edit_bank_info",
+        "pages/user_center/my_recommends",
+        "pages/user_center/my_exchange",
         "pages/user_center/exchange_detail",
         "pages/user_info/user_info",
         "pages/user_info/change_number"
@@ -45,49 +49,54 @@ class App extends Component {
       }
     };
   }
-  componentWillMount(){
-    this.getbaseMsg();
+  componentWillMount() {
+    // referrerInfo
+    // console.log('小程序初始化参数',this.$router.params)
+    this.wxLogin()
   }
   componentDidMount() {}
 
-  componentDidShow() {}
+  componentDidShow() {
+    // 需要检查登录状态
+    this.checkedLogin();
+  }
 
   componentDidHide() {}
 
   componentDidCatchError() {}
-  // get basics msg
-  async getbaseMsg() {
-    try {
-      const { keys = [] } = Taro.getStorageInfoSync();
-      if (!keys.includes("wxCode")) {
-        await Taro.login({
-          success: function({ code }) {
-            if (code) {
-              Taro.setStorageSync("wxCode", code);
-            }
+  // 检查登录是否失效
+  checkedLogin() {
+      Taro.checkSession({
+        success: function(result) {
+          if (result.errMsg === "checkSession:ok") {
           }
-        });
-        await getToken().then(({ data }) => {
-          Taro.setStorageSync("passwordKey", data.iv);
-          Taro.setStorageSync("currentToken", data.token);
-        });
-        const code = Taro.getStorageSync("wxCode");
-        await getOpenId({ code }).then(({ data }) => {
-          Taro.setStorageSync("currentUserId", data.token.openid);
-        });
-        await queryUserInfo().then(({data})=>{
-          if(data){
-          Taro.setStorageSync("currentUserInfo", data);
-          Taro.redirectTo({ url: "/pages/index/index" });
-          }else{
-          Taro.redirectTo({ url: "/pages/login/login" });
+        },
+        fail: function() {
+          this.wxLogin(); //重新调用微信登录
+        }
+      });
+  }
+  wxLogin() {
+     Taro.login({
+        success: function({ code }) {
+          if (code) {
+            // 获取微信code
+            Taro.setStorageSync("wxCode", code);
+            getToken().then(({ data }) => {
+              if (!data) return;
+              Taro.setStorageSync("passwordKey", data.iv);
+              Taro.setStorageSync("currentToken", data.token);
+            });
+             getOpenId({ code }).then(({data}) => {
+              Taro.setStorageSync("currentUserId", data.token.openid);
+            });
           }
-        })
-      }
-    } catch (e) {
-      console.log('错误信息',e)
-      Taro.showToast({ title: "网络异常 ，拉取数据失败",icon:"none" });
-    }
+          
+        },
+        fail: function() {
+          Taro.showToast({ title: "网络异常 ，拉取数据失败", icon: "none" });
+        }
+      });
   }
   // 在 App 类中的 render() 函数没有实际作用
   // 请勿修改此函数

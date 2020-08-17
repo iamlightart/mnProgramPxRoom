@@ -57,7 +57,6 @@ class FissionLoginModal extends Component {
           <AtIcon value='close' size='14' color='#000'></AtIcon>
         </View>
         <AtModalHeader>
-          {" "}
           {modalDataArray[this.state.modalState].title}
         </AtModalHeader>
         <AtModalContent>

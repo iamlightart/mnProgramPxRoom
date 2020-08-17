@@ -3,12 +3,24 @@ import logo from "@/assets/login/login_right_logo.svg";
 import welcomeText from "@/assets/login/welcome_text.svg";
 import bottomLogo from "@/assets/login/login_bottom_logo.svg";
 import { AtButton, AtForm, AtInput } from "taro-ui";
+import { connect } from "@tarojs/redux";
 import { View, Image, Text } from "@tarojs/components";
-import { phoneAuthCode } from "@/globalApi/index";
+import { phoneAuthCode,queryUserInfo } from "@/globalApi/index";
+import { SAVE_USER_INFO } from "../../actions/globalActions";
 import { decodePhoneNumber, enterInfo } from "./serviceApi";
 
 import "./login.scss";
 
+@connect(
+  ({ globalStore }) => ({
+    userInfo:globalStore.userInfo
+  }),
+  dispatch => ({
+    onSaveMsg(data) {
+      dispatch(SAVE_USER_INFO(data));
+    }
+  })
+)
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -26,16 +38,20 @@ class Login extends Component {
     };
     this._mytimer;
   }
-componentWillMount() {
-    // queryUserInfo().then(({ data }) => {
-    //   if (data) {
-    //     Taro.setStorageSync("currentUserInfo", data);
-    //     Taro.redirectTo({ url: "/pages/index/index" });
-    //   }
-    // });
+  componentWillMount() {
+    if(this.props.userInfo) {
+      Taro.redirectTo({ url: "/pages/index/index" });
+    }else{
+      queryUserInfo().then(({ data }) => {
+        if (data) {
+          this.props.onSaveMsg(data);
+          Taro.redirectTo({ url: "/pages/index/index" });
+        }
+      });
+    }
   }
   accountChange(value) {
-    if (!value) return;
+    console.log('value',value)
     this.setState({
       account: value,
       hasAuthCode: !(value.length === 11)
@@ -43,7 +59,6 @@ componentWillMount() {
     return value;
   }
   passwordChange(value) {
-    if (!value) return;
     this.setState({
       password: value,
       disableLogin: !(value.length === 6 && this.state.account.length === 11)
@@ -95,7 +110,6 @@ componentWillMount() {
       }, 1000);
     }
   }
-
   getPhoneNumber(e) {
     this.setState({
       loading: true
@@ -112,7 +126,7 @@ componentWillMount() {
         });
       }
     } finally {
-      console.log(e)
+      console.log(e);
       this.setState({
         loading: false
       });
@@ -139,19 +153,14 @@ componentWillMount() {
         sex: gender,
         type: 1
       };
-
-      enterInfo(param).then(({data}) => {
-        if(data){
-          Taro.setStorageSync("currentUserInfo", data);
+      enterInfo(param).then(({ data }) => {
+        if (data) {
+          this.props.onSaveMsg(data);
           Taro.redirectTo({ url: "/pages/index/index" });
-          Taro.navigateTo({
-            url: "/pages/index/index"
-          });
         }
-       
       });
     }
-    console.log(e)
+    console.log(e);
   }
   render() {
     const { count, hasAuthCode } = this.state;
@@ -168,9 +177,11 @@ componentWillMount() {
             <AtForm className='login-form'>
               <AtInput
                 name='value'
-                type='phone'
+                type='number'
                 className='input-box'
                 placeholder='手机号'
+                maxLength={11}
+                required
                 value={this.state.account}
                 onChange={this.accountChange.bind(this)}
               >
@@ -191,12 +202,13 @@ componentWillMount() {
                 )}
               </AtInput>
               <AtInput
-                name='value'
+                name='smsCode'
                 type='number'
                 className='input-box'
                 border={false}
                 placeholder='验证码'
                 maxLength={6}
+                required
                 value={this.state.password}
                 onChange={this.passwordChange.bind(this)}
               />
@@ -209,6 +221,7 @@ componentWillMount() {
               >
                 同意协议并登录
               </AtButton>
+
               <AtButton
                 full
                 openType='getPhoneNumber'

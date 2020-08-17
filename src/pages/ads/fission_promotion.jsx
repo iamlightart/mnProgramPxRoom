@@ -32,7 +32,7 @@ class FissionPromotion extends Component {
     if (e.from === "button") {
       return {
         title: "方糖兑大奖",
-        path: "/pages/ads/fission_promotion/fission_promotion",
+        path: "/pages/ads/fission_login",
         imageUrl: sharePic
       };
     }
