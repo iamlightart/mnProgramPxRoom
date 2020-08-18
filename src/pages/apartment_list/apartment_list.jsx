@@ -1,10 +1,14 @@
 import Taro, { Component } from "@tarojs/taro";
-import { WebView } from "@tarojs/components";
+import { WebView} from "@tarojs/components";
 
 class ApartmentList extends Component {
   constructor(props) {
     super(props);
-    this.config = {};
+    this.config = {
+      navigationBarTitleText: "像素公寓",
+      navigationBarBackgroundColor: "#eeeeee",
+      backgroundColor: "#eeeeee"
+    };
 
     this.state = {};
   }
@@ -21,10 +25,10 @@ class ApartmentList extends Component {
 
   render() {
     return (
-      <WebView
-        src='https://hrms.pixelroom.cn/tquery/#/'
-        onMessage={this.handleMessage}
-      />
+        <WebView
+          src='https://hrms.pixelroom.cn/tquery/#/'
+          onMessage={this.handleMessage}
+        />
     );
   }
 }

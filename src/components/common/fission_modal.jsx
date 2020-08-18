@@ -36,7 +36,7 @@ class FissionModal extends Component {
 
   render() {
     return (
-      <AtModal isOpened={this.state.showFissionDialog}>
+      <AtModal isOpened={this.state.showFissionDialog} closeOnClickOverlay={false}>
         <View className='closeBtn' onClick={this.hideDialog}>
           <AtIcon value='close' size='14' color='#000'></AtIcon>
         </View>

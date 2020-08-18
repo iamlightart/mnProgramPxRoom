@@ -52,7 +52,7 @@ class FissionLoginModal extends Component {
     ];
 
     return (
-      <AtModal isOpened={this.state.showFissionLoginDialog}>
+      <AtModal isOpened={this.state.showFissionLoginDialog} closeOnClickOverlay={false}>
         <View className='closeBtn' onClick={this.hideDialog}>
           <AtIcon value='close' size='14' color='#000'></AtIcon>
         </View>

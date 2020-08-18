@@ -51,7 +51,7 @@ class ButlerModal extends Component {
   render() {
     const{stewardList,showButlerDialog,addressSelectorChecked,currentIndex} = this.state
     return (
-      <AtModal isOpened={showButlerDialog}>
+      <AtModal isOpened={showButlerDialog} closeOnClickOverlay={false}>
         <View className='closeBtn' onClick={this.hideButerDialog}>
           <AtIcon value='close' size='14' color='#000'></AtIcon>
         </View>

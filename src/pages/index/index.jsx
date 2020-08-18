@@ -1,14 +1,14 @@
-import { AtTabBar } from "taro-ui";
+// import { AtTabBar } from "taro-ui";
 import Taro, { Component } from "@tarojs/taro";
 import { View } from "@tarojs/components";
-import myCenterIcon from "@/assets/index/myCenterIcon.svg";
-import myCenterFocusIcon from "@/assets/index/myCenterFocusIcon.svg";
-import pixelroomIcon from "@/assets/index/pixelroomIcon.svg";
-import pixelroomFocusIcon from "@/assets/index/pixelroomFocusIcon.svg";
+// import myCenterIcon from "@/assets/index/myCenterIcon.svg";
+// import myCenterFocusIcon from "@/assets/index/myCenterFocusIcon.svg";
+// import pixelroomIcon from "@/assets/index/pixelroomIcon.svg";
+// import pixelroomFocusIcon from "@/assets/index/pixelroomFocusIcon.svg";
 
 import "./index.scss";
 import UserCenter from "../user_center/user_center";
-import ApartmentList from "../apartment_list/apartment_list";
+// import ApartmentList from "../apartment_list/apartment_list";
 
 class Index extends Component {
   constructor(props) {
@@ -20,9 +20,9 @@ class Index extends Component {
       // navigationStyle:"custom"
     };
 
-    this.state = {
-      currentPage: 1
-    };
+    // this.state = {
+    //   currentPage: 1
+    // };
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -35,19 +35,13 @@ class Index extends Component {
 
   componentDidHide() {}
 
-  handleClick = currentPage => {
-    this.setState({
-      currentPage
-    });
-  };
-
   render() {
     return (
       <View className='index'>
-        {this.state.currentPage === 0 && <ApartmentList></ApartmentList>}
+        {/* {this.state.currentPage === 0 && <ApartmentList></ApartmentList>}
         {this.state.currentPage === 1 && <UserCenter></UserCenter>}
         <AtTabBar
-          className='my-tab-bar'
+          className='my-tab-bar fuck'
           color='#515151'
           selectedColor='#141414'
           fontSize='10'
@@ -68,7 +62,8 @@ class Index extends Component {
           ]}
           onClick={this.handleClick}
           current={this.state.currentPage}
-        />
+        /> */}
+        <UserCenter></UserCenter>
       </View>
     );
   }

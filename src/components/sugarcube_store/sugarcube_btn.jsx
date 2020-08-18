@@ -16,7 +16,7 @@ class SugarcubeBtn extends Component {
         
         <Image className='cubeBtnImg' src={cubeBtnImg} ></Image>
         
-          {this.props.number}
+          <View className='cubeValue'>{this.props.number}</View>
         <Image className='rightArrow' src={rightArrowImg} ></Image>
       </View>
     );

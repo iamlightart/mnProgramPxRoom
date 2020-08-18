@@ -47,7 +47,7 @@ class ExchangeStatusModal extends Component {
 
   render() {
     return (
-      <AtModal isOpened={this.state.showStatusDialog}>
+      <AtModal isOpened={this.state.showStatusDialog} closeOnClickOverlay={false}>
         <View hidden={this.state.modalState != 0}>
           <View
             className='closeBtn'

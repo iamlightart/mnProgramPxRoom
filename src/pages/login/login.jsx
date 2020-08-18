@@ -5,15 +5,15 @@ import bottomLogo from "@/assets/login/login_bottom_logo.svg";
 import { AtButton, AtForm, AtInput } from "taro-ui";
 import { connect } from "@tarojs/redux";
 import { View, Image, Text } from "@tarojs/components";
-import { phoneAuthCode,queryUserInfo } from "@/globalApi/index";
+import { phoneAuthCode, queryUserInfo } from "@/globalApi/index";
+import AuthorityModal from "@/components/common/authority_modal";
 import { SAVE_USER_INFO } from "../../actions/globalActions";
 import { decodePhoneNumber, enterInfo } from "./serviceApi";
-
 import "./login.scss";
 
 @connect(
   ({ globalStore }) => ({
-    userInfo:globalStore.userInfo
+    userInfo: globalStore.userInfo
   }),
   dispatch => ({
     onSaveMsg(data) {
@@ -39,9 +39,9 @@ class Login extends Component {
     this._mytimer;
   }
   componentWillMount() {
-    if(this.props.userInfo) {
+    if (this.props.userInfo) {
       Taro.redirectTo({ url: "/pages/index/index" });
-    }else{
+    } else {
       queryUserInfo().then(({ data }) => {
         if (data) {
           this.props.onSaveMsg(data);
@@ -51,7 +51,7 @@ class Login extends Component {
     }
   }
   accountChange(value) {
-    console.log('value',value)
+    console.log("value", value);
     this.setState({
       account: value,
       hasAuthCode: !(value.length === 11)
@@ -167,6 +167,7 @@ class Login extends Component {
     let windowHeightStyle = `height:${Taro.getSystemInfoSync().windowHeight}px`;
     return (
       <View className='login-wrap' style={windowHeightStyle}>
+        <AuthorityModal showDialog></AuthorityModal>
         <View className='circle'></View>
         <View className='form-top-circle'></View>
         <Image className='title-pic' src={welcomeText} />
