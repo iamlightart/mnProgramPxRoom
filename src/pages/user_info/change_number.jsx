@@ -1,8 +1,20 @@
 import Taro, { Component } from "@tarojs/taro";
 import { View } from "@tarojs/components";
 import { AtButton, AtInput, AtForm } from "taro-ui";
+import { phoneAuthCode,unBindPhone,bindPhoneNumber } from "@/globalApi/index";
+import { connect } from "@tarojs/redux";
+import { SAVE_USER_INFO } from "../../actions/globalActions";
 import "./change_number.scss";
 
+@connect(({ globalStore }) => ({
+  userInfo: globalStore.userInfo||{}
+}),
+dispatch => ({
+  onSaveMsg(data) {
+    dispatch(SAVE_USER_INFO(data));
+  }
+})
+)
 class ChangeNumber extends Component {
   constructor(props) {
     super(props);
@@ -12,87 +24,136 @@ class ChangeNumber extends Component {
     };
 
     this.state = {
-      count: 61,
-      hasAuthCode: false
+      oldPhoneCode: "",
+      newPhone: "",
+      newSmsCode: ""
     };
   }
-  getAuthCode() {
-    // this.timer(this.state.count);
-    // const param = {
-    //   tel: this.state.account,
-    //   type: 1
-    // };
-    // phoneAuthCode(param)
-    //   .then(() => {
-    //     Taro.showToast({
-    //       title: "验证码已发送",
-    //       duration: 2000,
-    //       icon: "none"
-    //     });
-    //   })
-    //   .catch(() => {
-    //     if (this._mytimer) {
-    //       clearTimeout(this._mytimer);
-    //       this.setState({
-    //         count: 60
-    //       });
-    //     }
-    //   });
-    console.log("获取验证码");
+
+  changeNumber() {
+    const { oldPhoneCode, newPhone, newSmsCode } = this.state;
+    if (oldPhoneCode && newPhone && newSmsCode) {
+      unBindPhone({smsCode:oldPhoneCode}).then(res=>{
+        if(res.code=='000000'){
+          const param={
+            smsCode: newSmsCode,
+              tel: newPhone,
+              unbindToken: res.data.unbindToken
+          }
+          bindPhoneNumber(param).then(result=>{
+            if(result.code=='000000'){
+              const {data} = result
+              this.props.onSaveMsg(data)
+              Taro.showToast({title:'手机号换绑成功',duration:3000})
+              setTimeout(()=>{
+                Taro.navigateBack()
+              },3000)
+            }else{
+              Taro.showToast({title:result.msg,icon:'none'})
+            }
+          })
+        }else{
+          Taro.showToast({title:res.msg,icon:'none'})
+        }
+      })
+    } else {
+      Taro.showToast({title: "请将信息填写完整！",icon: "none"});
+    }
   }
-
-  changeNumber = () => {
-    Taro.showToast({
-      title: "手机号换绑成功",
-      duration: 1500,
-      icon: "success"
+  getOldPhoneCode() {
+    let param = {
+      type: 3,
+      tel: this.props.userInfo.tel
+    };
+    phoneAuthCode(param).then(res => {
+      if (res.code == "000000") {
+        Taro.showToast({ title: "验证码已成功发送",icon:'none' });
+      }
     });
-    setTimeout(()=>{Taro.navigateBack()}, 1500);
-  };
-
+  }
+  getNewPhoneCode() {
+    const { newPhone } = this.state;
+    let param = {
+      tel: newPhone,
+      type: 4
+    };
+    phoneAuthCode(param).then(res => {
+      if (res.code == "000000") {
+        Taro.showToast({ title: "验证码已成功发送",icon:'none' });
+      }
+    });
+  }
+  editValue(key, value) {
+    this.setState({
+      [key]: value
+    });
+    return value;
+  }
   render() {
-    const { count, hasAuthCode } = this.state;
+    const { oldPhoneCode, newPhone, newSmsCode } = this.state;
+    const { tel } = this.props.userInfo;
     return (
       <View>
-        <View className='buttonWrap'>
+        {
+          tel&&<View className='buttonWrap'>
           <AtForm>
             <AtInput
-              title='新手机'
+              title='原手机验证'
               border={false}
               type='phone'
-              placeholder={`原号码${this.$router.params.phoneNum}`}
-              value={this.state.value6}
-              // onChange={this.handleChange.bind(this)}
+              placeholder={`${tel.substring(0, 3)}**${tel.substring(
+                7,
+                11
+              )}的验证码`}
+              value={oldPhoneCode}
+              onChange={this.editValue.bind(this, "oldPhoneCode")}
             >
-              {count >= 60 ? (
-                <AtButton
-                  size='small'
-                  circle
-                  disabled={hasAuthCode}
-                  onClick={this.getAuthCode.bind(this)}
-                  className='getAuthCode'
-                >
-                  获取验证码
-                </AtButton>
-              ) : (
-                <AtButton size='small' circle className='hintMsg'>
-                  {count}
-                </AtButton>
-              )}
+              <AtButton
+                size='small'
+                circle
+                onClick={this.getOldPhoneCode.bind(this)}
+                className='getAuthCode'
+              >
+                获取验证码
+              </AtButton>
+            </AtInput>
+            <View className='formDivider'></View>
+
+            <AtInput
+              title='新手机号码'
+              border={false}
+              type='phone'
+              placeholder='不要输入原手机'
+              value={newPhone}
+              onChange={this.editValue.bind(this, "newPhone")}
+            >
+              <AtButton
+                size='small'
+                circle
+                onClick={this.getNewPhoneCode.bind(this)}
+                className='getAuthCode'
+              >
+                获取验证码
+              </AtButton>
             </AtInput>
             <AtInput
-              title='验证码'
+              title='新验证码'
               type='password'
-              placeholder='请输入收到的验证码'
-              // onChange={this.handleChange.bind(this)}
+              value={newSmsCode}
+              placeholder='新手机收到的验证码'
+              onChange={this.editValue.bind(this, "newSmsCode")}
             />
           </AtForm>
           <View className='changeNumBtnWrap'>
-            <AtButton className='userInfoBtn' onClick={this.changeNumber}>
+            <AtButton
+              className='userInfoBtn'
+              onClick={this.changeNumber.bind(this)}
+            >
               换绑手机
             </AtButton>
           </View>
         </View>
+        }
       </View>
     );
   }

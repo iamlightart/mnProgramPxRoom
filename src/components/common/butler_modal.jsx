@@ -3,6 +3,8 @@ import { View, Image, Text, Picker } from "@tarojs/components";
 import { AtIcon, AtModal, AtModalHeader, AtModalContent } from "taro-ui";
 import buterDialog from "@/assets/user_center/butler_dialog.svg";
 import { queryHousekeeper } from "@/globalApi/index";
+import AuthorityModal from "@/components/common/authority_modal";
+
 import "./butler_modal.scss";
 
 class ButlerModal extends Component {
@@ -13,14 +15,15 @@ class ButlerModal extends Component {
       backgroundColor: "#eeeeee"
     };
     this.state = {
-      currentIndex:0,
+      currentIndex: 0,
+      AuthModal: false,
       addressSelectorChecked: {},
-      stewardList:[],
+      stewardList: [],
       showButlerDialog: this.props.showDialog
     };
   }
-  componentWillMount(){
-    this.queryListData()
+  componentWillMount() {
+    this.queryListData();
   }
   componentWillReceiveProps(nextProps) {
     this.setState({
@@ -36,20 +39,67 @@ class ButlerModal extends Component {
   onAddressChange = e => {
     this.setState({
       addressSelectorChecked: this.state.stewardList[e.detail.value],
-      currentIndex:Number(e.detail.value)
+      currentIndex: Number(e.detail.value)
     });
   };
-  queryListData(){
-    queryHousekeeper().then(({data})=>{
+  queryListData() {
+    queryHousekeeper().then(({ data }) => {
       this.setState({
-        stewardList:data,
-        currentIndex:0,
-        addressSelectorChecked:data[0]
-      })
-    })
+        stewardList: data,
+        currentIndex: 0,
+        addressSelectorChecked: data[0]
+      });
+    });
+  }
+  saveImage(imagePath) {
+    const _this = this;
+    Taro.authorize({
+      scope: "scope.writePhotosAlbum",
+      success() {
+        Taro.downloadFile({
+          url: imagePath,
+          success: function(res) {
+            console.log(res);
+            Taro.saveImageToPhotosAlbum({
+              filePath: res.tempFilePath,
+              success: function() {
+                Taro.showToast({
+                  title: "保存成功",
+                  icon: "success",
+                  duration: 2000
+                });
+              },
+              fail: function() {
+                Taro.showToast({
+                  title: "图片保存失败",
+                  icon: "none",
+                  duration: 2000
+                });
+              }
+            });
+          }
+        });
+      },
+      fail: function() {
+        _this.setState({
+          AuthModal: true
+        });
+      }
+    });
+  }
+  closeAuthModal() {
+    this.setState({
+      AuthModal: false
+    });
   }
   render() {
-    const{stewardList,showButlerDialog,addressSelectorChecked,currentIndex} = this.state
+    const {
+      stewardList,
+      showButlerDialog,
+      addressSelectorChecked,
+      currentIndex,
+      AuthModal
+    } = this.state;
     return (
       <AtModal isOpened={showButlerDialog} closeOnClickOverlay={false}>
         <View className='closeBtn' onClick={this.hideButerDialog}>
@@ -82,10 +132,22 @@ class ButlerModal extends Component {
               </View>
             </Picker>
 
-            <Image src={addressSelectorChecked.houseKeeperQrcode} className='butlerQR'></Image>
+            <Image
+              src={addressSelectorChecked.houseKeeperQrcode}
+              className='butlerQR'
+              onLongPress={this.saveImage.bind(
+                this,
+                addressSelectorChecked.houseKeeperQrcode
+              )}
+            />
             <Text className='hintInfo'>长按保存图片\n您的管家微信二维码</Text>
           </View>
         </AtModalContent>
+        <AuthorityModal
+          showDialog={AuthModal}
+          closeModal={this.closeAuthModal.bind(this)}
+          content='需要使用保存到相册权限'
+        ></AuthorityModal>
       </AtModal>
     );
   }

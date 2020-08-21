@@ -6,9 +6,20 @@ import GoodsUnitRow from "@/components/sugarcube_store/goods_unit_row";
 import ParaDisplay from "@/components/common/para_display";
 import ExchangeRulesLink from "@/components/common/exchange_rules_link"
 import ExchangeStartModal from "@/components/common/exchange_start_modal"
+import { connect } from "@tarojs/redux";
+import { catchDoods,exchangeNumber } from "../../actions/globalActions";
 import "./confirm_exchange.scss";
-import  queryGiftDetails from "./serviceExchangeApi";
+import  {queryGiftDetails} from "./serviceExchangeApi";
 
+@connect( () => ({}),
+  dispatch=>({
+  onSaveGoodMsg(data){
+    dispatch(catchDoods(data))
+  },
+  onSaveGoodsNumber(data){
+    dispatch(exchangeNumber(data))
+  }
+}))
 class ConfirmExchange extends Component {
   constructor(props) {
     super(props);
@@ -35,14 +46,22 @@ class ConfirmExchange extends Component {
       this.setState({
         detailsData:data
       })
+      this.props.onSaveGoodMsg(data)
     })
   }
   handleChange = value => {
     this.setState({
-      value
+      value,
+      showStartDialog:false
     });
+    this.props.onSaveGoodsNumber(value)
   };
+
   showStartModal=()=>{
+    if(this.state.value===0){
+      Taro.showToast({title:'请选择兑换数量！',icon:'none'})
+      return
+    }
     this.setState({
       showStartDialog:true
     })
@@ -52,8 +71,10 @@ class ConfirmExchange extends Component {
   render() {
     const {detailsData} = this.state
     return (
-      <View className='contentWrap'>
-        <ExchangeStartModal showDialog={this.state.showStartDialog}></ExchangeStartModal>
+     <View>
+      {
+        detailsData&& <View className='contentWrap'>
+        <ExchangeStartModal modalState={false} showDialog={this.state.showStartDialog}></ExchangeStartModal>
         <View className='whiteBoard'>
           <GoodsUnitRow
             noBorderBottom
@@ -62,7 +83,7 @@ class ConfirmExchange extends Component {
             goodsType={detailsData.type}
             goodsName={detailsData.name}
             goodsValue={detailsData.content}
-            goodsPrice={detailsData.price}
+            goodsPrice={detailsData.redeemPrice}
             showExchangeBtn={false}
           ></GoodsUnitRow>
         </View>
@@ -93,12 +114,14 @@ class ConfirmExchange extends Component {
             />
           </View>
           <View className='confirmExchangeBtnWrap'>
-            <AtButton className='confirmExchangeBtn' full onClick={this.showStartModal}>
+            <AtButton   className='confirmExchangeBtn' full onClick={this.showStartModal}>
               立即兑换
             </AtButton>
           </View>
         </View>
       </View>
+      }
+     </View>
     );
   }
 }

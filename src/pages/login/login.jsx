@@ -2,18 +2,19 @@ import Taro, { Component } from "@tarojs/taro";
 import logo from "@/assets/login/login_right_logo.svg";
 import welcomeText from "@/assets/login/welcome_text.svg";
 import bottomLogo from "@/assets/login/login_bottom_logo.svg";
+import alertIcon from "@/assets/login/alert_icon.svg";
 import { AtButton, AtForm, AtInput } from "taro-ui";
 import { connect } from "@tarojs/redux";
 import { View, Image, Text } from "@tarojs/components";
-import { phoneAuthCode, queryUserInfo } from "@/globalApi/index";
-import AuthorityModal from "@/components/common/authority_modal";
+import { phoneAuthCode } from "@/globalApi/index";
+import AuthorityWechatModal from "@/components/common/authority_wechat_modal";
 import { SAVE_USER_INFO } from "../../actions/globalActions";
 import { decodePhoneNumber, enterInfo } from "./serviceApi";
 import "./login.scss";
 
 @connect(
   ({ globalStore }) => ({
-    userInfo: globalStore.userInfo
+    ...globalStore
   }),
   dispatch => ({
     onSaveMsg(data) {
@@ -29,29 +30,31 @@ class Login extends Component {
       navigationBarTitleText: " "
     };
     this.state = {
+      path: "",
       account: "",
       password: "",
       loading: false,
       hasAuthCode: true,
       disableLogin: true,
+      wxMobile: "",
+      wxModal: false,
       count: 60
     };
     this._mytimer;
   }
+
   componentWillMount() {
-    if (this.props.userInfo) {
-      Taro.redirectTo({ url: "/pages/index/index" });
-    } else {
-      queryUserInfo().then(({ data }) => {
-        if (data) {
-          this.props.onSaveMsg(data);
-          Taro.redirectTo({ url: "/pages/index/index" });
-        }
-      });
+    this.setState({
+      path: this.$router.params.path
+    });
+  }
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.userInfo) {
+      Taro.switchTab({ url: "/pages/index/index" });
     }
+    return true;
   }
   accountChange(value) {
-    console.log("value", value);
     this.setState({
       account: value,
       hasAuthCode: !(value.length === 11)
@@ -117,16 +120,17 @@ class Login extends Component {
     const { encryptedData, iv } = e.detail;
     try {
       if (encryptedData && iv) {
-        decodePhoneNumber({ encryptedData, iv }).then(() => {
+        decodePhoneNumber({ encryptedData, iv }).then(({ data }) => {
           this.setState({
-            loading: false
+            loading: false,
+            wxModal: true,
+            wxMobile: data.phoneNumber
           });
           // const {phoneNumber} = data
           // enterInfo()
         });
       }
     } finally {
-      console.log(e);
       this.setState({
         loading: false
       });
@@ -143,7 +147,7 @@ class Login extends Component {
     }
     const { userInfo } = e.detail;
     if (userInfo) {
-      const { account, password } = this.state;
+      const { account, password, path } = this.state;
       const { nickName, avatarUrl, gender } = userInfo;
       let param = {
         tel: account,
@@ -156,18 +160,55 @@ class Login extends Component {
       enterInfo(param).then(({ data }) => {
         if (data) {
           this.props.onSaveMsg(data);
-          Taro.redirectTo({ url: "/pages/index/index" });
+          if (path) {
+            Taro.redirectTo({ url: path });
+          } else {
+            Taro.switchTab({ url: "/pages/index/index" });
+          }
         }
       });
     }
-    console.log(e);
+  }
+  useWxlogin(e) {
+    const { userInfo } = e.detail;
+    if (userInfo) {
+      const { wxMobile, path } = this.state;
+      const { nickName, avatarUrl, gender } = userInfo;
+      let param = {
+        tel: wxMobile,
+        nickName,
+        avatar: avatarUrl,
+        sex: gender,
+        type: 2
+      };
+      enterInfo(param).then(({ data }) => {
+        if (data) {
+          this.props.onSaveMsg(data);
+          if (path) {
+            Taro.redirectTo({ url: path });
+          } else {
+            Taro.switchTab({ url: "/pages/index/index" });
+          }
+        }
+      });
+    }
+  }
+  closeAuthModal() {
+    this.setState({
+      wxModal: false
+    });
   }
   render() {
-    const { count, hasAuthCode } = this.state;
+    const { count, hasAuthCode, wxModal } = this.state;
     let windowHeightStyle = `height:${Taro.getSystemInfoSync().windowHeight}px`;
+
     return (
       <View className='login-wrap' style={windowHeightStyle}>
-        <AuthorityModal showDialog></AuthorityModal>
+        <AuthorityWechatModal
+          showDialog={wxModal}
+          closeModal={this.closeAuthModal.bind(this)}
+          getMsg={this.useWxlogin.bind(this)}
+        ></AuthorityWechatModal>
         <View className='circle'></View>
         <View className='form-top-circle'></View>
         <Image className='title-pic' src={welcomeText} />
@@ -175,33 +216,39 @@ class Login extends Component {
         {/* 中间表单 */}
         <View className='content-wrap'>
           <View className='form-box'>
-            <AtForm className='login-form'>
+            <View className='form-desc'>
+              {" "}
+              <Image className='point-icon' src={alertIcon} />
+              在租租客请使用签约手机号登录，收益可翻倍！
+            </View>
+            <View className='login-box'>
               <AtInput
                 name='value'
                 type='number'
                 className='input-box'
+                border={false}
                 placeholder='手机号'
                 maxLength={11}
                 required
                 value={this.state.account}
                 onChange={this.accountChange.bind(this)}
-              >
-                {count >= 60 ? (
-                  <AtButton
-                    size='small'
-                    circle
-                    disabled={hasAuthCode}
-                    onClick={this.getAuthCode.bind(this)}
-                    className='getAuthCode'
-                  >
-                    获取验证码
-                  </AtButton>
-                ) : (
-                  <AtButton size='small' circle className='hintMsg getAuthCode'>
-                    {count}
-                  </AtButton>
-                )}
-              </AtInput>
+              ></AtInput>
+              {count >= 60 ? (
+                <AtButton
+                  size='small'
+                  circle
+                  disabled={hasAuthCode}
+                  border={false}
+                  onClick={this.getAuthCode.bind(this)}
+                  className='getAuthCode'
+                >
+                  获取验证码
+                </AtButton>
+              ) : (
+                <AtButton size='small' circle className='hintMsg getAuthCode'>
+                  {count}
+                </AtButton>
+              )}
               <AtInput
                 name='smsCode'
                 type='number'
@@ -243,7 +290,7 @@ class Login extends Component {
                   《像素公寓服务协议》
                 </Text>
               </View>
-            </AtForm>
+            </View>
           </View>
         </View>
         {/* 底部图标 */}

@@ -5,7 +5,7 @@ import SugarcubeBtn from "@/components/sugarcube_store/sugarcube_btn";
 import GoodsContainer from "@/components/sugarcube_store/goods_container";
 import FissionBanner from "@/components/fission/fission_banner";
 import ButlerModal from "@/components/common/butler_modal";
-
+import { connect } from "@tarojs/redux";
 import myRecommendsImg from "@/assets/user_center/my_recommends.svg";
 import myExchangeImg from "@/assets/user_center/my_exchange.svg";
 import myButlerImg from "@/assets/user_center/my_butler.svg";
@@ -13,7 +13,9 @@ import myServiceImg from "@/assets/user_center/my_service.svg";
 import { queryHotGift } from "./userServiceApi";
 import "./user_center.scss";
 
-
+@connect(({ globalStore }) => ({
+  userInfo: globalStore.userInfo
+}))
 class UserCenter extends Component {
   constructor(props) {
     super(props);
@@ -25,16 +27,18 @@ class UserCenter extends Component {
     this.state = {
       showButlerDialog: false,
       phoneNumber: "18200296606",
-      userInfo: Taro.getStorageSync("currentUserInfo"),
-      hotList:[]
+      hotList: []
     };
   }
-  componentWillMount(){
-    queryHotGift().then(({data})=>{
+  componentWillMount() {
+    if(!this.props.userInfo){
+      Taro.reLaunch({url:'/pages/login/login'})
+    }
+    queryHotGift().then(({ data }) => {
       this.setState({
-        hotList:data||[]
-      })
-    })
+        hotList: data || []
+      });
+    });
   }
   gotoUserInfo = () => {
     Taro.navigateTo({ url: "/pages/user_info/user_info" });
@@ -56,10 +60,11 @@ class UserCenter extends Component {
     });
   };
   render() {
-    const { hotList,userInfo={} } = this.state;
-    const {avatar,nickName,score,signFlag,livingDays=0} = userInfo
+    const { hotList } = this.state;
+    const { userInfo } = this.props;
     return (
-      <View className='contentWrap'>
+     <View>
+       {userInfo&& <View className='contentWrap'>
         <View className='headerBannerImg'></View>
         <ButlerModal
           showDialog={this.state.showButlerDialog}
@@ -67,14 +72,14 @@ class UserCenter extends Component {
         ></ButlerModal>
         <View className='userBanner'>
           <View className='avatarImgWrap' onClick={this.gotoUserInfo}>
-            <AtAvatar size='large' circle image={avatar}></AtAvatar>
+            <AtAvatar size='large' circle image={userInfo.avatar}></AtAvatar>
           </View>
           <View className='userInfo'>
-            <View>{nickName}</View>
-            <View>{livingDays>0?'已入住'+livingDays:'尚未入住'}</View>
+            <View>{userInfo.nickName}</View>
+            <View>{userInfo.livingDays > 0 ? "已入住" + userInfo.livingDays : "尚未入住"}</View>
           </View>
           <View className='sugarcubeBtnWrap'>
-            <SugarcubeBtn number={score}></SugarcubeBtn>
+            <SugarcubeBtn number={userInfo.score}></SugarcubeBtn>
           </View>
         </View>
         <View className='mainFunctionSection'>
@@ -86,12 +91,13 @@ class UserCenter extends Component {
             <Image src={myExchangeImg} className='mainFunctionImg'></Image>
             我的兑换
           </View>
-          {signFlag&&<View className='mainFunctionUnit' onClick={this.showButerDialog}>
-            <Image src={myButlerImg} className='mainFunctionImg'></Image>
-            我的管家
-          </View>
-          }
-          
+          {userInfo.signFlag && (
+            <View className='mainFunctionUnit' onClick={this.showButerDialog}>
+              <Image src={myButlerImg} className='mainFunctionImg'></Image>
+              我的管家
+            </View>
+          )}
+           
           <View className='mainFunctionUnit' onClick={this.makePhoneCall}>
             <Image src={myServiceImg} className='mainFunctionImg'></Image>
             我的客服
@@ -109,7 +115,8 @@ class UserCenter extends Component {
         <View className='fissionBannerWrap'>
           <FissionBanner></FissionBanner>
         </View>
-      </View>
+      </View>}
+     </View>
     );
   }
 }

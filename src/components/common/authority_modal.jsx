@@ -10,32 +10,10 @@ import {
 import "./fission_login_modal.scss";
 
 class AuthorityModal extends Component {
-  constructor(props) {
-    super(props);
-    this.config = {
-      navigationBarBackgroundColor: "#fdd835",
-      backgroundColor: "#eeeeee"
-    };
-    this.state = {
-      showFissionLoginDialog: this.props.showDialog,
-    };
-  }
-  componentWillMount() {}
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      showFissionLoginDialog: nextProps.showDialog
-    });
-  }
-  hideDialog = () => {
-    this.setState({
-      showFissionLoginDialog: false
-    });
-  };
   render() {
-
     return (
-      <AtModal isOpened={this.state.showFissionLoginDialog} closeOnClickOverlay={false}>
-        <View className='closeBtn' onClick={this.hideDialog}>
+      <AtModal isOpened={this.props.showDialog} closeOnClickOverlay={false} onClose={this.props.closeModal}>
+        <View className='closeBtn' onClick={this.props.closeModal}>
           <AtIcon value='close' size='14' color='#000'></AtIcon>
         </View>
         <AtModalHeader>
@@ -44,11 +22,11 @@ class AuthorityModal extends Component {
         <AtModalContent>
           <View className='modalContentWrap'>
             <Text className='hintInfo'>
-              需要XXXX授权
+              {this.props.content}
             </Text>
             <View className='buttonWrap'>
               <View className='modalBtn'>
-                <AtButton className='modalConfirmBtn'>去设置</AtButton>
+                <AtButton className='modalConfirmBtn' openType='openSetting' onClick={this.props.closeModal}>去设置</AtButton>
               </View>
             </View>
           </View>

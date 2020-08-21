@@ -6,9 +6,14 @@ import CubeIconImg from "@/assets/common/cube_icon.svg";
 import RightArrowImg from "@/assets/common/right_arrow.svg";
 import RightArrowOrangeImg from "@/assets/common/right_arrow_orange.svg";
 import CommonUtils from "@/utils/common_utils";
+import { connect } from "@tarojs/redux";
 import queryScoreDetails from "./my_sugarcube_api";
 import "./my_sugarcube.scss";
 
+@connect(
+  ({ globalStore }) => ({
+    ...globalStore
+  }))
 class MySugarcube extends Component {
   constructor(props) {
     super(props);
@@ -76,8 +81,10 @@ class MySugarcube extends Component {
             当前拥有方糖
             <Image src={CubeIconImg} className='cubeIconImg'></Image>
           </View>
-
-          <View className='sugarcubeBalanceValue'>2000</View>
+            {
+              this.props.userInfo&&<View className='sugarcubeBalanceValue'>{this.props.userInfo.score}</View>
+            }
+   
           <View
             className='sugarcubeStoreLink'
             onClick={this.gotoSugarcubeStore}

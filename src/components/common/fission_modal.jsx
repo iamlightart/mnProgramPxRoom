@@ -14,20 +14,11 @@ class FissionModal extends Component {
       showFissionDialog: this.props.showDialog
     };
   }
-  componentDidMount() {}
   componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
     this.setState({
       showFissionDialog: nextProps.showDialog
     });
   }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
   hideDialog = () => {
     this.setState({
       showFissionDialog: false

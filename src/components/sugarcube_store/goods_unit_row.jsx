@@ -1,38 +1,47 @@
 import Taro, { Component } from "@tarojs/taro";
 import { View, Image } from "@tarojs/components";
 import { AtButton } from "taro-ui";
-
+// import goodsImg1 from "@/assets/sugarcube_store/hair_dryer.png";
 import cubeBtnImg from "@/assets/common/cube_icon.svg";
-
 import "./goods_unit_row.scss";
+
 /*
   noBorderBottom：是否显示底部边距
 
 */
 class GoodsUnitRow extends Component {
-  
   /*下面为自定义方法 */
   confirmExchange = () => {
-  const {goodsID}=this.props
-    Taro.navigateTo({ url: "/pages/exchange_process/confirm_exchange?goodsID="+goodsID });
+    const { goodsID } = this.props;
+    Taro.navigateTo({
+      url: "/pages/exchange_process/confirm_exchange?goodsID=" + goodsID
+    });
   };
-    
+
   render() {
     let noBorderBottom;
     if (this.props.noBorderBottom) {
       noBorderBottom = `border-bottom:#fff`;
     }
-    const {goodsName,goodsPrice,showExchangeBtn,goodsValue=''} = this.props
+    const {
+      goodsName,
+      goodsPrice,
+      showExchangeBtn,
+      goodsValue = ""
+    } = this.props;
+    console.log(this.props.imgSrc);
     return (
       <View className='goodsUnitRow' style={noBorderBottom}>
         <Image
           className='goodsImg'
           src={this.props.imgSrc}
-          mode='aspectFill'
-        ></Image>
+          // src={goodsImg1}
+          mode='widthFix'
+          webp lazyLoad
+        />
         <View className='goodsInfo'>
           <View className='goodsName'>{goodsName}</View>
-          <View className='goodsValue'>{goodsValue.substring(0,10)}</View>
+          <View className='goodsValue'>{goodsValue}</View>
           <View className='goodsPriceWrap'>
             <View className='goodsPrice'>{goodsPrice}</View>
             <Image src={cubeBtnImg} className='cubeBtnImg'></Image>

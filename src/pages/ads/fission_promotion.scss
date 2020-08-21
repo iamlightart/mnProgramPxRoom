@@ -1,6 +1,18 @@
 page {
   background-color: #fdd835;
 }
+.header-place-holder {
+  background-color: #EE741B;
+  position: relative;
+  .back-to-center-btn {
+    position: absolute;
+    z-index: 3;
+    width: 230px;
+    height: 60px;
+    left: 15px;
+    bottom: 0px;
+  }
+}
 .page-wrap {
   display: flex;
   flex-direction: column;
@@ -18,14 +30,14 @@ page {
     width: 300%;
     height: 800px;
     position: absolute;
-    top: -450px;
+    top: -440px;
     z-index: -1;
   }
   .top-text-pic {
     width: 435px;
     height: 162px;
     position: relative;
-    top: 40px;
+    top: 10px;
   }
   .detail-btn {
     position: absolute;
@@ -33,7 +45,7 @@ page {
     width: 180px;
     height: 120px;
     right: 0px;
-    top: 20px;
+    top: -10px;
   }
 }
 
@@ -60,7 +72,7 @@ page {
 }
 .middle-content {
   width: 692px;
-  height: 882px;
+  height: 900px;
   padding: 38px 40px;
   background: #ffffff;
   box-sizing: border-box;

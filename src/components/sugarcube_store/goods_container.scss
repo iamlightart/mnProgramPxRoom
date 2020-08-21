@@ -56,3 +56,17 @@
   flex-direction: column;
   align-items: center;
 }
+
+.loadMoreBox {
+  position: relative;
+}
+
+.noMore {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 15px;
+  font-size: 24px;
+  color: #b4b4b4;
+}

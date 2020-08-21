@@ -16,54 +16,14 @@ class Index extends Component {
     this.config = {
       navigationBarTitleText: "像素公寓",
       navigationBarBackgroundColor: "#fdd835",
-      backgroundColor: "#eeeeee"
-      // navigationStyle:"custom"
+      backgroundColor: "#fdd835"
     };
-
-    // this.state = {
-    //   currentPage: 1
-    // };
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   console.log(this.props, nextProps);
-  // }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
   render() {
     return (
       <View className='index'>
-        {/* {this.state.currentPage === 0 && <ApartmentList></ApartmentList>}
-        {this.state.currentPage === 1 && <UserCenter></UserCenter>}
-        <AtTabBar
-          className='my-tab-bar fuck'
-          color='#515151'
-          selectedColor='#141414'
-          fontSize='10'
-          iconSize='24'
-          fixed
-          tabList={[
-            {
-              title: "自助找房",
-              image: pixelroomIcon,
-              selectedImage: pixelroomFocusIcon,
-              max: "99"
-            },
-            {
-              title: "个人中心",
-              image: myCenterIcon,
-              selectedImage: myCenterFocusIcon
-            }
-          ]}
-          onClick={this.handleClick}
-          current={this.state.currentPage}
-        /> */}
         <UserCenter></UserCenter>
+        <View className='greyBottomView'></View>
       </View>
     );
   }

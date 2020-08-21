@@ -58,3 +58,21 @@ export function queryHousekeeper (param) {
     data: param
   });
 }
+// 解绑用户手机号
+export function unBindPhone (param) {
+  return request({
+    url: '/hrms-rcmdapi/customer/cust-tel-unbind',
+    method: 'POST',
+    data: param
+  });
+}
+// 绑定信新手机
+export function bindPhoneNumber (param) {
+  return request({
+    url: '/hrms-rcmdapi/customer/cust-tel-bind',
+    method: 'POST',
+    data: param
+  });
+}
+
+

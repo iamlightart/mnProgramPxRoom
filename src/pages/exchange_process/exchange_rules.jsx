@@ -10,22 +10,7 @@ class ConfirmExchange extends Component {
       navigationBarTitleText: "兑奖规则",
       navigationBarBackgroundColor: "#eeeeee"
     };
-
-    this.state = {};
   }
-
-  componentDidMount() {}
-
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
   render() {
     return (
       <View sytle='width:100%'>

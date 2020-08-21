@@ -2,4 +2,12 @@
   flex-direction: column;
   width: 100%;
 }
+.greyBottomView{
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 600px;
+  background-color: #eeeeee;
+  z-index: -2;
+}
 

@@ -4,22 +4,6 @@ import { AtIcon } from "taro-ui";
 import "./exchange_rules_link.scss";
 
 class ExchangeRulesLink extends Component {
-  constructor(props) {
-    super(props);
-    this.config = {};
-
-    this.state = {};
-  }
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
   gotoExchangeRules = () => {
     Taro.navigateTo({ url: "/pages/exchange_process/exchange_rules"});
   };

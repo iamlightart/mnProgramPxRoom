@@ -46,6 +46,11 @@ class MyExchange extends Component {
     if (this.state.isAll) return;
     this.queryListData();
   }
+  toDetails(goodsId) {
+    Taro.navigateTo({
+      url: "/pages/user_center/exchange_detail?goodsId=" + goodsId
+    });
+  }
   render() {
     let [wrapHeight, listHeight] = CommonUtils.getInstance().formatHeight(120);
     const { dataList, isAll, isloading } = this.state;
@@ -55,50 +60,58 @@ class MyExchange extends Component {
           <FissionBanner type='narrow'></FissionBanner>
         </View>
         <View className='myExchangeList'>
-          <ScrollView
-            scrollY
-            className='listWrap'
-            onScrollToLower={this.getMore.bind(this)}
-            style={listHeight}
-          >
-            {dataList.map((val, index) => (
-              <View key={index + "index"} className='myExchangeUnit'>
-                <View className='unitLeft'>
-                  <View className='unitName'>{val.item.name}</View>
-                  <View className='unitType'>
-                    {val.itemType === 1 ? "现金奖品" : "实体奖品"}
-                  </View>
-                  <View className='unitConditionWrap'>
-                    <View className='exchangeTime'>
-                      {val.createTime} 申请兑换
+          {dataList.length != 0 && !isloading && isAll && (
+            <ScrollView
+              scrollY
+              className='listWrap'
+              onScrollToLower={this.getMore.bind(this)}
+              style={listHeight}
+            >
+              {dataList.map((val, index) => (
+                <View
+                  key={index + "index"}
+                  className='myExchangeUnit'
+                  onClick={this.toDetails.bind(this, val.redeemId)}
+                >
+                  <View className='unitLeft'>
+                    <View className='unitName'>{val.item.name}</View>
+                    <View className='unitType'>
+                      {val.itemType === 1 ? "现金奖品" : "实体奖品"}
                     </View>
-                    <View className='exchangeStatus'>
-                      {val.sendStatus === 1
-                        ? "待发货"
-                        : val.sendStatus === 2
-                        ? "已发货"
-                        : "发货失败"}
+                    <View className='unitConditionWrap'>
+                      <View className='exchangeTime'>
+                        {val.createTime} 申请兑换
+                      </View>
+                      <View className='exchangeStatus'>
+                        {val.sendStatus === 1
+                          ? "待发货"
+                          : val.sendStatus === 2
+                          ? "已发货"
+                          : "发货失败"}
+                      </View>
                     </View>
                   </View>
+                  <View className='unitRight'>×{val.itemCount}</View>
                 </View>
-                <View className='unitRight'>×{val.itemCount}</View>
+              ))}
+              <View className='moreHintMsg'>
+                {isloading && (
+                  <AtActivityIndicator
+                    mode='center'
+                    content='加载中...'
+                  ></AtActivityIndicator>
+                )}
+                {!isloading && isAll && <View>没有数据了~</View>}
               </View>
-            ))}
-            <View className='moreHintMsg'>
-              {isloading && (
-                <AtActivityIndicator
-                  mode='center'
-                  content='加载中...'
-                ></AtActivityIndicator>
-              )}
-              {!isloading && isAll && <View>没有数据了~</View>}
-            </View>
-          </ScrollView>
+            </ScrollView>
+          )}
           {/* 以下为缺省状态 */}
-          {/* <View className='defaultContent'>
-            <Image src={muscleImg} className='defaultImg'></Image>
-            <Text className='defaultInfo'>暂时还未兑换奖品，继续加油咯~</Text>
-          </View> */}
+          {dataList.length === 0 && !isloading && isAll && (
+            <View className='defaultContent'>
+              <Image src={muscleImg} className='defaultImg'></Image>
+              <Text className='defaultInfo'>暂时还未兑换奖品，继续加油咯~</Text>
+            </View>
+          )}
         </View>
       </View>
     );

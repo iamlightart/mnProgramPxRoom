@@ -9,20 +9,7 @@ class ApartmentList extends Component {
       navigationBarBackgroundColor: "#eeeeee",
       backgroundColor: "#eeeeee"
     };
-
-    this.state = {};
   }
-
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
-  }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
   render() {
     return (
         <WebView

@@ -3,7 +3,8 @@ import Taro, { Component } from "@tarojs/taro";
 import { Provider } from "@tarojs/redux";
 import Index from "./pages/index";
 import configStore from "./store";
-import { getToken, getOpenId } from "./globalApi";
+import { getToken, getOpenId, queryUserInfo } from "./globalApi";
+import { SAVE_USER_INFO } from "./actions/globalActions";
 import "./custom-theme.scss";
 import "./app.scss";
 
@@ -14,17 +15,15 @@ import "./app.scss";
 // }
 
 const store = configStore();
-
 class App extends Component {
   constructor(props) {
     super(props);
     this.config = {
       pages: [
-        // "pages/login/login",
-        // "pages/sugarcube_store/sugarcube_store_waterfall",
         "pages/index/index",
         "pages/apartment_list/apartment_list",
-        
+        "pages/login/login",
+        "pages/sugarcube_store/sugarcube_store_waterfall",
         "pages/login/agreement",
         "pages/my_sugarcube/my_sugarcube",
         "pages/my_sugarcube/sugarcube_rules",
@@ -75,41 +74,47 @@ class App extends Component {
     // console.log('小程序初始化参数',this.$router.params)
     this.wxLogin();
   }
-  componentDidMount() {}
+  componentDidMount() {
+    // 需要检查登录状态
+    //  this.checkedLogin();
+  }
 
   componentDidShow() {
     // 需要检查登录状态
-    this.checkedLogin();
+    // this.checkedLogin();
   }
 
-  componentDidHide() {}
-
-  componentDidCatchError() {}
   // 检查登录是否失效
   checkedLogin() {
+    const _this = this;
     Taro.checkSession({
       success: function(result) {
         if (result.errMsg === "checkSession:ok") {
         }
       },
       fail: function() {
-        this.wxLogin(); //重新调用微信登录
+        _this.wxLogin(); //重新调用微信登录
       }
     });
   }
   wxLogin() {
     Taro.login({
-      success: function({ code }) {
+      success: async function({ code }) {
         if (code) {
           // 获取微信code
           Taro.setStorageSync("wxCode", code);
-          getToken().then(({ data }) => {
+          await getToken().then(({ data }) => {
             if (!data) return;
             Taro.setStorageSync("passwordKey", data.iv);
             Taro.setStorageSync("currentToken", data.token);
           });
-          getOpenId({ code }).then(({ data }) => {
-            Taro.setStorageSync("currentUserId", data.token.openid);
+          await getOpenId({ code }).then(res => {
+            Taro.setStorageSync("currentUserId", res.data.token.openid);
+          });
+          await queryUserInfo().then(({ data }) => {
+            if (data) {
+              store.dispatch(SAVE_USER_INFO(data));
+            }
           });
         }
       },

@@ -5,7 +5,8 @@ import request from "@/utils/request";
 export function queryHotGift () {
   return request({
     url: '/hrms-rcmdapi/shop-items/hot-item-list',
-    method: 'POST',
+    method: 'POST', 
+    showLoading: true
   });
 }
 // 兑换列表
@@ -16,6 +17,16 @@ export function queryRedeemList (param) {
     data:param
   });
 }
+// 兑换详情
+export function queryRedeemDetails (param) {
+  return request({
+    url: '/hrms-rcmdapi/customer/cust-redeem-get',
+    method: 'POST',
+    showLoading: true,
+    data:param
+  });
+}
+
 // 推荐汇总
 export function totalRecommend () {
   return request({

@@ -9,22 +9,7 @@ class SugarcubeRules extends Component {
       navigationBarTitleText: "方糖规则",
       navigationBarBackgroundColor: "#eeeeee"
     };
-
-    this.state = {};
   }
-
-  componentDidMount() {}
-
-  // componentWillReceiveProps(nextProps) {
-  //   console.log(this.props, nextProps);
-  // }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
   render() {
     return (
       <View sytle='width:100%'>

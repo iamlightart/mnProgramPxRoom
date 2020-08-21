@@ -55,25 +55,21 @@ function request(param) {
         if (res.statusCode === 200&&res.data.code=='000000') {
           resolve(res.data);
         } else {
-          console.log('res.data',res.data)
           if (res.data.code=='100001') {
             Taro.showToast({
-              title:'登陆状态已过期',
+              title:'登陆状态已过期,请重新登录',
               icon: "none"
             });
+            Taro.redirectTo({url:'/pages/login/login'})
             return
           }
-          // Taro.showToast({
-          //   title:res.data.msg,
-          //   icon: "none"
-          // });
-          // reject(res);
+          resolve(res.data);
         }
       },
       fail: function(err) {
         reject(err);
         Taro.showToast({
-          title: "您的网络连接出现问题，请稍后刷新重试",
+          title: "您的网络连接出现问题，请稍后重试",
           icon: "none"
         });
       },

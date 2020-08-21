@@ -10,9 +10,12 @@ import {
 import prizeImg from "@/assets/common/prize.svg";
 import purseImg from "@/assets/common/purse.svg";
 import cryImg from "@/assets/common/cry.svg";
+import { connect } from "@tarojs/redux";
 import "./exchange_status_modal.scss";
 // 兑奖结算的弹窗
-
+@connect( ({globalStore}) => ({
+  goods:globalStore.goods
+}))
 class ExchangeStatusModal extends Component {
   constructor(props) {
     super(props);
@@ -22,37 +25,34 @@ class ExchangeStatusModal extends Component {
     };
     this.state = {
       showStatusDialog: this.props.showDialog,
-      modalState: 0
     };
   }
-  componentDidMount() {}
   componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps);
     this.setState({
       showStatusDialog: nextProps.showDialog
     });
   }
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
   hideDialog = () => {
     this.setState({
       showStatusDialog: false
     });
   };
-
+  backIndex(){
+    Taro.switchTab({url:'/pages/index/index'})
+  }
+  toShare(){
+    Taro.navigateTo({url:'/pages/ads/fission_promotion'})
+  }
   render() {
     return (
       <AtModal isOpened={this.state.showStatusDialog} closeOnClickOverlay={false}>
-        <View hidden={this.state.modalState != 0}>
+
+        {/* 无法兑换 */}
+        <View hidden={this.props.modalState != 0}>
           <View
             className='closeBtn'
             onClick={this.hideDialog}
-            hidden={this.state.modalState}
+            hidden={this.props.modalState}
           >
             <AtIcon value='close' size='14' color='#000'></AtIcon>
           </View>
@@ -65,7 +65,7 @@ class ExchangeStatusModal extends Component {
               </Text>
               <View className='buttonWrap'>
                 <View className='modalBtn'>
-                  <AtButton className='modalConfirmBtn'>
+                  <AtButton onClick={this.toShare.bind(this)} className='modalConfirmBtn'>
                     立即推荐赚方糖
                   </AtButton>
                 </View>
@@ -73,11 +73,13 @@ class ExchangeStatusModal extends Component {
             </View>
           </AtModalContent>
         </View>
-        <View hidden={this.state.modalState != 1}>
+
+          {/* 申请成功 */}
+        <View hidden={this.props.modalState != 1}>
           <View
             className='closeBtn'
             onClick={this.hideDialog}
-            hidden={this.state.modalState}
+            hidden={this.props.modalState}
           >
             <AtIcon value='close' size='14' color='#000'></AtIcon>
           </View>
@@ -91,31 +93,33 @@ class ExchangeStatusModal extends Component {
               </Text>
               <View className='buttonWrap'>
                 <View className='modalBtn'>
-                  <AtButton className='modalConfirmBtn'>返回个人中心</AtButton>
+                  <AtButton onClick={this.backIndex.bind(this)} className='modalConfirmBtn'>返回个人中心</AtButton>
                 </View>
               </View>
             </View>
           </AtModalContent>
         </View>
-        <View hidden={this.state.modalState != 2}>
+        <View hidden={this.props.modalState != 2}>
           <View
             className='closeBtn'
             onClick={this.hideDialog}
-            hidden={this.state.modalState}
+            hidden={this.props.modalState}
           >
             <AtIcon value='close' size='14' color='#000'></AtIcon>
           </View>
+
+
           <AtModalHeader>申请成功</AtModalHeader>
           <AtModalContent className='atModalContent'>
             <View className='modalContentWrap'>
               <Image src={purseImg} className='modalPic'></Image>
               <Text className='modalContent'>
                 我们已收到您的兑奖申请，兑奖记录可在“我的兑换”中查看， 款项将于
-                7<Text className='orange'>7</Text>个工作日到账， 请注意查收
+                <Text className='orange'>7</Text>个工作日到账， 请注意查收
               </Text>
               <View className='buttonWrap'>
                 <View className='modalBtn'>
-                  <AtButton className='modalConfirmBtn'>返回个人中心</AtButton>
+                  <AtButton onClick={this.backIndex.bind(this)} className='modalConfirmBtn'>返回个人中心</AtButton>
                 </View>
               </View>
             </View>

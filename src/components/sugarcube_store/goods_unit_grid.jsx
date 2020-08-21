@@ -8,10 +8,12 @@ import "./goods_unit_grid.scss";
 */
 class GoodsUnitGrid extends Component {
  
-  confirmExchange=()=>{
-    Taro.navigateTo({url:'/pages/exchange_process/confirm_exchange'})
+  confirmExchange(){
+    const { goodsID } = this.props;
+    Taro.navigateTo({
+      url: "/pages/exchange_process/confirm_exchange?goodsID=" + goodsID
+    });
   }
-
   /*下面为自定义方法 */
   // 方糖商城跳转
 
@@ -22,6 +24,7 @@ class GoodsUnitGrid extends Component {
           mode='widthFix'
           src={this.props.imgSrc}
           className='goodsImg'
+          webp lazyLoad
         ></Image>
         <View className='goodsInfo'>
           <View className='goodsName'>{this.props.goodsName}</View>

@@ -62,7 +62,7 @@ class UserInfo extends Component {
       });
     } else if (this.state.hintModalType == 1) {
       wxUnbind().then(() => {
-        this.props.onSaveMsg('')
+        this.props.onSaveMsg(null)
         Taro.reLaunch({ url: "/pages/login/login" });
       });
     }

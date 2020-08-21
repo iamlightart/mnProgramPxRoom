@@ -4,12 +4,26 @@ import bankCardImg from "@/assets/common/bank_card.svg";
 import RightArrowOrangeImg from "@/assets/common/right_arrow_orange.svg";
 import GoodsUnitRow from "@/components/sugarcube_store/goods_unit_row";
 import InfoListRow from "@/components/common/info_list_row";
-import goodsImg1 from "@/assets/sugarcube_store/rent_coupon.png";
 import ExchangeStatusModal from "@/components/common/exchange_status_modal";
+import { connect } from "@tarojs/redux";
 import { AtDivider, AtButton } from "taro-ui";
 import FissionBanner from "@/components/fission/fission_banner";
+import { queryUserInfo } from "@/globalApi/index";
+import { querybankinfo,updateBankinfo,cashRedeem } from "./serviceExchangeApi";
+import { SAVE_USER_INFO } from "../../actions/globalActions";
 import "./exchange_info_editor.scss";
 // 虚拟商品兑奖页面
+
+@connect(
+  ({ globalStore }) => ({
+    ...globalStore
+  }),
+  dispatch => ({
+    onSaveMsg(data) {
+      dispatch(SAVE_USER_INFO(data));
+    }
+  })
+)
 class EditAddress extends Component {
   constructor(props) {
     super(props);
@@ -21,63 +35,153 @@ class EditAddress extends Component {
     this.state = {
       // 第一次为0，添加银行卡信息页面，填写后为正常提交页面，状态1
       // 在有地址的时候默认为状态1
-      infoState: 1,
-      showExhangeDialog: false
+      infoState: 0,
+      modalState:2,
+      showExhangeDialog: false,
+      bankinfo: {
+        bankCardName: "", // 银行卡开户名
+        bankCardNumber: "", // 银行卡号
+        bankName: "" // 开户网点
+      },
+      editBank: {
+        bankCardName: "",
+        bankCardNumber: "",
+        bankName: ""
+      }
     };
   }
-
-  openDialog = () => {
-    this.setState({
-      showExhangeDialog: true
+  componentWillMount() {
+    this.getBankMsg();
+  }
+  getBankMsg() {
+    querybankinfo().then(({ data }) => {
+      if (data.bankCardNumber) {
+        this.setState({
+          infoState: 1,
+          bankinfo: data
+        });
+      }
     });
-  };
-
+  }
+  editValue(key, e) {
+    let { value } = e.detail;
+    if(key === 'bankCardNumber'){
+      value = value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ')
+    }
+    this.setState({
+      editBank: {
+        ...this.state.editBank,
+        [key]: value
+      }
+    });
+    return value;
+  }
+  submitBankinfo() {
+    const { editBank } =this.state
+    const {bankCardName,bankCardNumber,bankName} = editBank
+    if(bankCardName&&bankCardNumber&&bankName){
+      updateBankinfo(editBank).then(()=>{
+        this.getBankMsg()
+        setTimeout(()=>{
+          this.setState({
+            infoState:1
+          })
+        },1000)
+      })
+    }else{
+      Taro.showToast({title:'请将银行卡信息填写完整',icon:'none'})
+    }
+  }
+  changeEditStatus(){
+    this.setState({
+      infoState:0
+    })
+  }
+  submitConvert(){
+    const param={
+      itemCount:this.props.goods.number,
+      itemId:this.props.goods.type.itemId,
+      tel:this.props.userInfo.tel
+    }
+    cashRedeem(param).then((res)=>{
+      if(res.code=='000000'){
+        this.setState({
+          showExhangeDialog: true,
+          modalState:2
+        });
+      }else if(res.code == '300003'){
+      
+        this.setState({
+          showExhangeDialog: true,
+          modalState:0
+        });
+      }
+      queryUserInfo().then(({result})=>{
+        this.props.onSaveMsg(result.data);
+      })
+    })
+  }
   render() {
-    const hairDryerData = {
-      ID: 1,
-      type: "substance",
-      img: goodsImg1,
-      name: "100元现金",
-      value: "价值1399元",
-      price: "1000"
-    };
+    const { bankinfo, editBank,modalState } = this.state;
+    const { userInfo, goods } = this.props;
     return (
       <View>
         {/* 单独封装了三个状态的ExchangeModal */}
         <ExchangeStatusModal
+          modalState={modalState}
           showDialog={this.state.showExhangeDialog}
         ></ExchangeStatusModal>
         <View className='contentWrap' hidden={this.state.infoState != 0}>
           <FissionBanner type='narrow'></FissionBanner>
           <View className='whiteBoard infoInputWrap'>
             <View className='inputWrap'>
-              <Input placeholder='银行卡号' className='inputComponent'></Input>
-            </View>
-            <View className='inputWrap'>
-              <Input placeholder='开户行' className='inputComponent'></Input>
+              <Input
+                type='number'
+                onInput={this.editValue.bind(this, "bankCardNumber")}
+                value={editBank.bankCardNumber}
+                placeholder='银行卡号'
+                className='inputComponent'
+              ></Input>
             </View>
             <View className='inputWrap'>
               <Input
-                placeholder='收款人姓名'
+                type='text'
+                onInput={this.editValue.bind(this, "bankName")}
+                value={editBank.bankName}
+                placeholder='开户行'
+                className='inputComponent'
+              ></Input>
+            </View>
+            <View className='inputWrap'>
+              <Input
+                type='text'
+                onInput={this.editValue.bind(this, "bankCardName")}
+                value={editBank.bankCardName}
+                placeholder='银行卡开户名'
                 className='inputComponent'
               ></Input>
             </View>
             <View className='buttonWrap'>
-              <AtButton className='modalConfirmBtn'>确认提交</AtButton>
+              <AtButton
+                className='modalConfirmBtn'
+                onClick={this.submitBankinfo.bind(this)}
+              >
+                确认提交
+              </AtButton>
             </View>
           </View>
         </View>
         <View className='contentWrap' hidden={this.state.infoState != 1}>
           <View className='whiteBoard infoContainer'>
-            <View className='addressWrap'>
+            <View className='addressWrap' onClick={this.changeEditStatus.bind(this)}>
               <View className='locationWrap'>
                 <Image src={bankCardImg} className='locationImg'></Image>
               </View>
               <View className='addressInfo'>
                 <View className='firstLine'>
-                  <Text className='name'>招商银行储蓄卡</Text>
+                  <Text className='name'>{bankinfo.bankName}</Text>
                 </View>
-                <View className='address'>6214 8312 8748 7539</View>
+                <View className='address'>{bankinfo.bankCardNumber}</View>
               </View>
               <View className='arrowWrap'>
                 <Image
@@ -87,9 +191,9 @@ class EditAddress extends Component {
               </View>
             </View>
             <View className='bankInfo'>
-              <Text>李凤麟</Text>
-              <Text>18200296606</Text>
-              <Text>四川省成都市四川大学支行</Text>
+              <Text>{bankinfo.bankCardName}</Text>
+              <Text>{userInfo.tel}</Text>
+              <Text>{bankinfo.bankName}</Text>
             </View>
           </View>
           <View className='whiteBoard confirmWrap'>
@@ -98,17 +202,20 @@ class EditAddress extends Component {
             <View className='goodsUnitWrap'>
               <GoodsUnitRow
                 noBorderBottom
-                imgSrc={hairDryerData.img}
-                goodsID={hairDryerData.ID}
-                goodsType={hairDryerData.type}
-                goodsName={hairDryerData.name}
-                goodsValue={hairDryerData.value}
-                goodsPrice={hairDryerData.price}
+                imgSrc={goods.type.image}
+                goodsID={goods.type.itemId}
+                goodsType={goods.type.type}
+                goodsName={goods.type.name}
+                goodsValue={goods.type.content}
+                goodsPrice={goods.type.redeemPrice}
                 showExchangeBtn={false}
               ></GoodsUnitRow>
             </View>
             <View className='InfoListWrap'>
-              <InfoListRow paraName='兑换数量' paraValue='2'></InfoListRow>
+              <InfoListRow
+                paraName='兑换数量'
+                paraValue={goods.number}
+              ></InfoListRow>
               <InfoListRow
                 paraName='配送方式'
                 paraValue='提现打款到银行卡'
@@ -116,7 +223,7 @@ class EditAddress extends Component {
               <AtDivider height='60' lineColor='#E1E1E1'></AtDivider>
             </View>
             <View className='buttonWrap'>
-              <AtButton className='modalConfirmBtn' onClick={this.openDialog}>
+              <AtButton className='modalConfirmBtn' onClick={this.submitConvert.bind(this)}>
                 确认提交
               </AtButton>
             </View>

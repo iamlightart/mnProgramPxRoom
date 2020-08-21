@@ -7,7 +7,6 @@ import {
   AtDivider
 } from "taro-ui";
 import { connect } from '@tarojs/redux'
-import avatar from "@/assets/user_center/avatar.jpg";
 import apartment from "@/assets/common/room.jpg";
 import FissionLoginModal from "@/components/common/fission_login_modal";
 import { phoneAuthCode } from "@/globalApi/index";
@@ -35,28 +34,22 @@ class FissionLogin extends Component {
     this.state = {
       tel:'',
       smsCode:'',
-      referrerCode:''
+      referrerCode:'',
+      inviteAvatar:'',
+      name:'',
+      resultModal:false,
+      modalState:0// 1更换 0 绑定 3 在租无法绑定
     };
   }
   componentWillMount(){
+    const {header,code,name}=this.$router.params
    this.setState({
-    referrerCode:this.$router.params.code|| ''
+    referrerCode:code,
+    inviteAvatar:header,
+    name:name
    })
   }
- 
-  invite = ()=>{
-    let param={
-      referrer:this.state.referrerCode,// 推荐人编码
-      tel:'',// 电话号码
-      smsCode:'',// 验证码
-      nickName:'',//微信昵称
-      avatar:'',// 微信头像
-      sex:'',//性别
-    }
-    acceptInvite(param).then(res=>{
-      console.log('接受邀请',res)
-    })
-  }
+
   getAuthCode = () => {
     if(!this.state.tel){
       Taro.showToast({
@@ -91,8 +84,7 @@ class FissionLogin extends Component {
    return value
   }
   getWxuserMsg = (e)=>{
-    console.log('thie.state',this.state)
-    const { tel, smsCode } = this.state;
+    const { tel, smsCode,referrerCode } = this.state;
     if (!tel||!smsCode){
       Taro.showToast({
         title: "账号或密码不能为空！",
@@ -104,7 +96,7 @@ class FissionLogin extends Component {
     if (userInfo) {
       const { nickName, avatarUrl, gender } = userInfo;
       let param={
-        referrer:'',// 推荐人编码
+        referrer:referrerCode,// 推荐人编码
         tel:tel,// 电话号码
         smsCode:smsCode,// 验证码
         nickName:nickName,//微信昵称
@@ -113,25 +105,50 @@ class FissionLogin extends Component {
       }
       acceptInvite(param).then(res=>{
         this.props.onSaveMsg(res.data);
+        if(res.code=='000000'){
+          this.setState({
+            resultModal:true,
+            modalState:0
+          })
+        }else if(res.code=='000001'){
+          this.setState({
+            resultModal:true,
+            modalState:1
+          })
+        }else if(res.code=='100001'){
+          this.setState({
+            resultModal:true,
+            modalState:3
+          })
+
+        }else if(res.code=='300001'||res.code=='300002'){
+             Taro.showToast({title:'该账号已是像素用户 即将跳转去登录',icon:'none',duration:2800})
+            setTimeout(()=>{
+              Taro.switchTab({url:'/pages/index/index'})
+            },3000)
+        }else{
+          Taro.showToast({title:res.msg,icon:'none'})
+        }
+       
       })
   }
 }
 
   render() {
-    const {tel,smsCode} = this.state
+    const {tel,smsCode,inviteAvatar,name,resultModal,modalState} = this.state
     return (
       <View className='page-wrap'>
-        <FissionLoginModal showDialog={false}></FissionLoginModal>
+        <FissionLoginModal name={name} modalState={modalState} showDialog={resultModal}></FissionLoginModal>
         <View className='top-content '>
           <Image className='top-bg-pic' src={bgCircle} />
           <View className='avatar-wrap'>
             <AtAvatar
               size='large'
               circle
-              image={avatar}
+              image={inviteAvatar}
               className='avatar-img'
             ></AtAvatar>
-            <Text className='top-text'>您的好友大屁股\n邀请您入住像素公寓</Text>
+            <Text className='top-text'>您的好友{name}\n邀请您入住像素公寓</Text>
           </View>
         </View>
         <View className='top-bg-box'></View>

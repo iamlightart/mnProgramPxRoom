@@ -3,7 +3,8 @@ import { View, Image } from "@tarojs/components";
 import rightArrowImg from "@/assets/common/right_arrow.svg";
 import SugarcubeBtn from "@/components/sugarcube_store/sugarcube_btn";
 import ExchangeRulesLink from "@/components/common/exchange_rules_link";
-
+import { AtActivityIndicator } from "taro-ui";
+import { connect } from "@tarojs/redux";
 import "./goods_container.scss";
 import GoodsUnitRow from "./goods_unit_row";
 import GoodsUnitGrid from "./goods_unit_grid";
@@ -19,25 +20,10 @@ import GoodsUnitGrid from "./goods_unit_grid";
     type='waterfall'商品以瀑布页方式显示
     dataList 数据列表 [] 
   */
-
+@connect(({ globalStore }) => ({
+  ...globalStore
+}))
 class GoodsContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      leftList: [],
-      rightList: [],
-      leftHeight: 0,
-      rightHeight: 0
-    };
-  }
-  componentDidMount(){
-    console.log('xxx1')
-    const { unitType } = this.props;
-    if(unitType==='waterfall')  {
-      this.test()
-    }
-    
-  }
   gotoSugarcubeStore = () => {
     if (this.props.showViewMoreLink) {
       Taro.reLaunch({
@@ -45,66 +31,17 @@ class GoodsContainer extends Component {
       });
     }
   };
-
-  computedHeight(src) {
-    return new Promise((resolve, reject) => {
-      // let query = Taro.createSelectorQuery().in(this.$scope);
-    
-      //   query.select('#leftCloumn').boundingClientRect();
-      //   query.select('#rightColumn').boundingClientRect();
-      //   query.exec((res) => {
-      //     console.log('获取到的元素',res)
-      //     let leftHeight = res[0].height||0;
-      //     let rightHeight = res[1].height||0;
-      //     resolve({leftHeight,rightHeight});
-      //   });
-     
-          Taro.getImageInfo({
-            src,
-            success:function(result){
-              resolve(result.height);
-            },
-            fail:function () {
-              resolve(1);
-              // reject('err 图片信息获取失败');
-            }
-          })
-     })
-    }
-  async test() {
-    const {dataList} = this.props
-    const {leftList,rightList} = this.state
-    const leftArry = [];
-    const rightArry = [];
-    let leftHeight = 0 ;
-    let rightHeight = 0 ;
-    for (const item of dataList){
-        let imageHeight= await this.computedHeight(item.image)
-        if(leftHeight<=rightHeight){
-          leftArry.push(item)
-          leftHeight+=imageHeight
-        }else{
-          rightArry.push(item)
-          rightHeight += imageHeight 
-        }
-        console.log('左侧',leftHeight)
-        console.log('右侧',rightHeight)
-      }
-    this.setState({
-      leftList:leftList.concat(leftArry),
-      rightList:rightList.concat(rightArry)
-    })
-  }
   render() {
-    const { dataList = [],unitType } = this.props;
-    const {leftList,rightList} = this.state
+    const { dataList = [], unitType } = this.props;
     return (
       <View className='goodsContainer'>
         <View className='shopListHeader' onClick={this.gotoSugarcubeStore}>
           <View className='listHeaderTitle'>{this.props.containerTitle}</View>
           <View className='listHeaderFunctionWrap'>
             <View hidden={!this.props.showSugarcubeBtn}>
-              <SugarcubeBtn></SugarcubeBtn>
+              {this.props.userInfo && (
+                <SugarcubeBtn number={this.props.userInfo.score}></SugarcubeBtn>
+              )}
             </View>
             <View hidden={!this.props.showViewMoreLink}>
               <View className='viewMoreLink'>
@@ -129,7 +66,7 @@ class GoodsContainer extends Component {
               goodsType={item.type}
               goodsName={item.name}
               goodsValue={item.content}
-              goodsPrice={item.price}
+              goodsPrice={item.redeemPrice}
               showExchangeBtn
             ></GoodsUnitRow>
           ))}
@@ -139,35 +76,49 @@ class GoodsContainer extends Component {
             <ExchangeRulesLink></ExchangeRulesLink>
             <View className='waterfallWrap'>
               <View className='waterfallColumn' id='leftCloumn'>
-                {1&&leftList.map(item => {
-                  return(
-                    <GoodsUnitGrid
-                      key={item.itemId+'1'}
-                      imgSrc={item.image}
-                      goodsID={item.itemId}
-                      goodsType={item.type}
-                      goodsName={item.name}
-                      goodsValue={item.content}
-                      goodsPrice={item.price}
-                    ></GoodsUnitGrid>
-                  )
+                {dataList.map((item, i) => {
+                  if (i % 2 != 0) {
+                    return (
+                      <GoodsUnitGrid
+                        key={item.itemId + "1"}
+                        imgSrc={item.image}
+                        goodsID={item.itemId}
+                        goodsType={item.type}
+                        goodsName={item.name}
+                        goodsValue={item.content}
+                        goodsPrice={item.redeemPrice}
+                      ></GoodsUnitGrid>
+                    );
+                  }
                 })}
               </View>
               <View className='waterfallColumn' id='rightColumn'>
-                {rightList.map((item) => {
-                  return (
-                    <GoodsUnitGrid
-                      key={item.itemId+'2'}
-                      imgSrc={item.image}
-                      goodsID={item.itemId}
-                      goodsType={item.type}
-                      goodsName={item.name}
-                      goodsValue={item.content}
-                      goodsPrice={item.price}
-                    ></GoodsUnitGrid>
-                  );
+                {dataList.map((item, i) => {
+                  if (i % 2 === 0) {
+                    return (
+                      <GoodsUnitGrid
+                        key={item.itemId + "2"}
+                        imgSrc={item.image}
+                        goodsID={item.itemId}
+                        goodsType={item.type}
+                        goodsName={item.name}
+                        goodsValue={item.content}
+                        goodsPrice={item.redeemPrice}
+                      ></GoodsUnitGrid>
+                    );
+                  }
                 })}
               </View>
+            </View>
+            <View className='loadMoreBox'>
+              {this.props.isAll && !this.props.isLoading && (
+                <View className='noMore'>没有更多了~</View>
+              )}
+              <AtActivityIndicator
+                isOpened={this.props.isLoading}
+                mode='center'
+                content='加载中...'
+              ></AtActivityIndicator>
             </View>
           </View>
         )}

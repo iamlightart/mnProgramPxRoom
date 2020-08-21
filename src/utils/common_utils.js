@@ -1,6 +1,6 @@
-import Taro from "@tarojs/taro";
+import Taro, { Component } from "@tarojs/taro";
 
-class CommonUtils {
+class CommonUtils extends Component {
   static getInstance() {
     if (!CommonUtils.instance) {
       CommonUtils.instance = new CommonUtils();
@@ -16,6 +16,9 @@ class CommonUtils {
     let listHeightStyle = `height:${windowHeight -
       parseInt((windowWidth / 375) * occupiedHeight)}px`;
     return [wrapHeightStyle, listHeightStyle];
+  };
+  getHeadrHeight = () => {
+    return Taro.getSystemInfoSync().statusBarHeight + 40;
   };
 }
 
