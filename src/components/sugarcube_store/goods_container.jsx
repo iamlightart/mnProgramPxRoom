@@ -24,13 +24,15 @@ import GoodsUnitGrid from "./goods_unit_grid";
   ...globalStore
 }))
 class GoodsContainer extends Component {
+  componentDidMount = () => {};
   gotoSugarcubeStore = () => {
     if (this.props.showViewMoreLink) {
-      Taro.reLaunch({
+      Taro.navigateTo({
         url: "/pages/sugarcube_store/sugarcube_store_waterfall"
       });
     }
   };
+
   render() {
     const { dataList = [], unitType } = this.props;
     return (
@@ -39,9 +41,9 @@ class GoodsContainer extends Component {
           <View className='listHeaderTitle'>{this.props.containerTitle}</View>
           <View className='listHeaderFunctionWrap'>
             <View hidden={!this.props.showSugarcubeBtn}>
-              {this.props.userInfo && (
-                <SugarcubeBtn number={this.props.userInfo.score}></SugarcubeBtn>
-              )}
+              <SugarcubeBtn
+                number={this.props.userInfo ? this.props.userInfo.score : 0}
+              ></SugarcubeBtn>
             </View>
             <View hidden={!this.props.showViewMoreLink}>
               <View className='viewMoreLink'>
@@ -65,7 +67,7 @@ class GoodsContainer extends Component {
               goodsID={item.itemId}
               goodsType={item.type}
               goodsName={item.name}
-              goodsValue={item.content}
+              goodsValue={`价值 ${item.price} 元`}
               goodsPrice={item.redeemPrice}
               showExchangeBtn
             ></GoodsUnitRow>
@@ -77,7 +79,7 @@ class GoodsContainer extends Component {
             <View className='waterfallWrap'>
               <View className='waterfallColumn' id='leftCloumn'>
                 {dataList.map((item, i) => {
-                  if (i % 2 != 0) {
+                  if (i % 2 === 0) {
                     return (
                       <GoodsUnitGrid
                         key={item.itemId + "1"}
@@ -85,7 +87,7 @@ class GoodsContainer extends Component {
                         goodsID={item.itemId}
                         goodsType={item.type}
                         goodsName={item.name}
-                        goodsValue={item.content}
+                        goodsValue={`价值 ${item.price} 元`}
                         goodsPrice={item.redeemPrice}
                       ></GoodsUnitGrid>
                     );
@@ -94,7 +96,7 @@ class GoodsContainer extends Component {
               </View>
               <View className='waterfallColumn' id='rightColumn'>
                 {dataList.map((item, i) => {
-                  if (i % 2 === 0) {
+                  if (i % 2 != 0) {
                     return (
                       <GoodsUnitGrid
                         key={item.itemId + "2"}
@@ -102,7 +104,7 @@ class GoodsContainer extends Component {
                         goodsID={item.itemId}
                         goodsType={item.type}
                         goodsName={item.name}
-                        goodsValue={item.content}
+                        goodsValue={`价值 ${item.price} 元`}
                         goodsPrice={item.redeemPrice}
                       ></GoodsUnitGrid>
                     );

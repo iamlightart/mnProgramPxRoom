@@ -8,7 +8,8 @@
       "@/assets/*": ["./src/assets/*"],
       "@/package": ["./package.json"],
       "@/project": ["./project.config.json"],
-      "@/globalApi": ["./src/globalApi/*"],
+      "@/global_api": ["src/global_api/*"],
+      "@/actions": ["./src/actions/*"]
     }
   }
 }

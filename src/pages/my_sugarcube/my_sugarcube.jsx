@@ -1,5 +1,5 @@
 import Taro, { Component } from "@tarojs/taro";
-import { View, Image } from "@tarojs/components";
+import { View, Image, Text } from "@tarojs/components";
 import { AtTabs, AtTabsPane } from "taro-ui";
 import FissionBanner from "@/components/fission/fission_banner";
 import CubeIconImg from "@/assets/common/cube_icon.svg";
@@ -7,13 +7,14 @@ import RightArrowImg from "@/assets/common/right_arrow.svg";
 import RightArrowOrangeImg from "@/assets/common/right_arrow_orange.svg";
 import CommonUtils from "@/utils/common_utils";
 import { connect } from "@tarojs/redux";
+import muscleImg from "@/assets/common/muscle.svg";
+import noOutcomeImg from "@/assets/common/no_outcome.svg";
 import queryScoreDetails from "./my_sugarcube_api";
 import "./my_sugarcube.scss";
 
-@connect(
-  ({ globalStore }) => ({
-    ...globalStore
-  }))
+@connect(({ globalStore }) => ({
+  ...globalStore
+}))
 class MySugarcube extends Component {
   constructor(props) {
     super(props);
@@ -26,17 +27,18 @@ class MySugarcube extends Component {
 
     this.state = {
       type: 0,
-      pageNo: 1,
-      pageSize: 100,
-      listData: []
+      incomeList: [], // 收入
+      expendList: [] // 支出
     };
   }
   componentWillMount() {
-    const {pageNo,type} = this.state
-    this.queryData(type,pageNo);
+    this.queryData(1);
+    this.queryData(2);
   }
   gotoSugarcubeStore = () => {
-    Taro.reLaunch({ url: "/pages/sugarcube_store/sugarcube_store_waterfall" });
+    Taro.navigateTo({
+      url: "/pages/sugarcube_store/sugarcube_store_waterfall"
+    });
   };
 
   gotoSugarcubeRules = () => {
@@ -44,17 +46,28 @@ class MySugarcube extends Component {
   };
 
   handleTabClick = value => {
-    this.queryData(value,1)
-  };
-  queryData(type,index=1) {
-    const {pageSize} = this.state;
-    queryScoreDetails({ type:type+1, pageNo:index, pageSize }).then(({data}) => {
-      this.setState({
-        listData:data.list,
-        pageNo:index+1,
-        type:type
-      })
+    this.setState({
+      type: value
     });
+  };
+  queryData(type) {
+    queryScoreDetails({ type: type, pageNo: 1, pageSize: 100 }).then(
+      ({ data }) => {
+        if (data) {
+          if (type === 1) {
+            // 收入
+            this.setState({
+              incomeList: data.list
+            });
+          } else {
+            // 支出
+            this.setState({
+              expendList: data.list
+            });
+          }
+        }
+      }
+    );
   }
 
   // 适配包裹高度及列表高度的方法,通过系统windowheight计算包裹页面元素的wrap高度和明细列表高度，动态适配
@@ -62,7 +75,7 @@ class MySugarcube extends Component {
     const tabList = [{ title: "收入" }, { title: "支出" }];
     // CommonUtils.getInstance().formatHeight(列表上方的占用高度，需要根据不同页面进行有效适配)
     let [wrapHeight, listHeight] = CommonUtils.getInstance().formatHeight(312);
-    const {listData} = this.state
+    const { incomeList, expendList } = this.state;
     return (
       // 最大的包裹，通过屏幕高度适配列表高度
       <View className='mySugarcubeWrap' style={wrapHeight}>
@@ -81,10 +94,9 @@ class MySugarcube extends Component {
             当前拥有方糖
             <Image src={CubeIconImg} className='cubeIconImg'></Image>
           </View>
-            {
-              this.props.userInfo&&<View className='sugarcubeBalanceValue'>{this.props.userInfo.score}</View>
-            }
-   
+          <View className='sugarcubeBalanceValue'>
+            {this.props.userInfo ? this.props.userInfo.score : 0}
+          </View>
           <View
             className='sugarcubeStoreLink'
             onClick={this.gotoSugarcubeStore}
@@ -100,49 +112,68 @@ class MySugarcube extends Component {
           <View className='balanceDetailHeader'>
             <View className='detailHeaderTitle'>方糖明细</View>
           </View>
-          <AtTabs
-            current={this.state.type}
-            tabList={tabList}
-            onClick={this.handleTabClick}
-          >
-            <AtTabsPane
+          {expendList.length === 0 && incomeList.length === 0 && (
+            <View className='detailBlankContainer'>
+              <Image src={muscleImg} className='defaultImg'></Image>
+              <Text className='defaultInfo'>您暂时还没有方糖，继续加油咯~</Text>
+            </View>
+          )}
+          {(expendList.length > 0 || incomeList.length > 0) && (
+            <AtTabs
               current={this.state.type}
-              index={0}
-              sytle='display:flex'
+              tabList={tabList}
+              onClick={this.handleTabClick}
             >
-              {/* 需要通过listHeight动态匹配屏幕高度适配列表高度  */}
-              <View className='tabDetailListWrap' style={listHeight}>
-                {listData.map(item => (
-                  <View
-                    key={item.id}
-                    className='tabDetailListUnit incomeListUnit'
-                  >
-                    <View className='detailInfoWrap'>
-                <View className='detailInfo'>{item.title}</View>
-                <View className='detailTime'>{item.createTime}</View>
+              <AtTabsPane
+                current={this.state.type}
+                index={0}
+                sytle='display:flex'
+              >
+                {/* 需要通过listHeight动态匹配屏幕高度适配列表高度  */}
+                <View className='tabDetailListWrap' style={listHeight}>
+                  {incomeList.map(item => (
+                    <View
+                      key={item.id}
+                      className='tabDetailListUnit incomeListUnit'
+                    >
+                      <View className='detailInfoWrap'>
+                        <View className='detailInfo'>{item.title}</View>
+                        <View className='detailTime'>{item.createTime}</View>
+                      </View>
+                      <View className='detailBalanceChange'>+{item.score}</View>
                     </View>
-                <View className='detailBalanceChange'>+{item.score}</View>
-                  </View>
-                ))}
-              </View>
-            </AtTabsPane>
-            <AtTabsPane current={this.state.type} index={1}>
-              <View className='tabDetailListWrap' style={listHeight}>
-                {listData.map(item => (
-                  <View
-                    key={item.id}
-                    className='tabDetailListUnit outcomeListUnit'
-                  >
-                    <View className='detailInfoWrap'>
-                      <View className='detailInfo'>{item.title}</View>
-                      <View className='detailTime'>{item.createTime}</View>
+                  ))}
+                </View>
+              </AtTabsPane>
+
+              <AtTabsPane current={this.state.type} index={1}>
+                <View className='tabDetailListWrap' style={listHeight}>
+                  {(expendList.length > 0 || incomeList.length > 0) &&
+                    expendList.map(item => (
+                      <View
+                        key={item.id}
+                        className='tabDetailListUnit outcomeListUnit'
+                      >
+                        <View className='detailInfoWrap'>
+                          <View className='detailInfo'>{item.title}</View>
+                          <View className='detailTime'>{item.createTime}</View>
+                        </View>
+                        <View className='detailBalanceChange'>
+                          -{item.score}
+                        </View>
+                      </View>
+                    ))}
+
+                  {expendList.length === 0 && (
+                    <View className='detailBlankContainer'>
+                      <Image src={noOutcomeImg} className='defaultImg'></Image>
+                      <Text className='defaultInfo'>您还没有支出哦~</Text>
                     </View>
-                    <View className='detailBalanceChange'>-{item.score}</View>
-                  </View>
-                ))}
-              </View>
-            </AtTabsPane>
-          </AtTabs>
+                  )}
+                </View>
+              </AtTabsPane>
+            </AtTabs>
+          )}
         </View>
       </View>
     );

@@ -12,7 +12,8 @@ import "./goods_unit_row.scss";
 class GoodsUnitRow extends Component {
   /*下面为自定义方法 */
   confirmExchange = () => {
-    const { goodsID } = this.props;
+    const { goodsID,isLink=false} = this.props;
+    if(isLink) return
     Taro.navigateTo({
       url: "/pages/exchange_process/confirm_exchange?goodsID=" + goodsID
     });
@@ -29,9 +30,8 @@ class GoodsUnitRow extends Component {
       showExchangeBtn,
       goodsValue = ""
     } = this.props;
-    console.log(this.props.imgSrc);
     return (
-      <View className='goodsUnitRow' style={noBorderBottom}>
+      <View className='goodsUnitRow' style={noBorderBottom}  onClick={this.confirmExchange}>
         <Image
           className='goodsImg'
           src={this.props.imgSrc}
@@ -53,7 +53,6 @@ class GoodsUnitRow extends Component {
               className='exchangeBtn'
               size='small'
               circle
-              onClick={this.confirmExchange}
             >
               兑换
             </AtButton>

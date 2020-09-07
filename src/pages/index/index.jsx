@@ -23,7 +23,12 @@ class Index extends Component {
     return (
       <View className='index'>
         <UserCenter></UserCenter>
-        <View className='greyBottomView'></View>
+        <View
+          className='linearColorView'
+          style={`height:${Taro.getSystemInfoSync().windowHeight}px`}
+        >
+          o(*￣▽￣*)o
+        </View>
       </View>
     );
   }

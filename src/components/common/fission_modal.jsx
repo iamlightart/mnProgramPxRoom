@@ -10,25 +10,13 @@ class FissionModal extends Component {
       navigationBarBackgroundColor: "#fdd835",
       backgroundColor: "#eeeeee"
     };
-    this.state = {
-      showFissionDialog: this.props.showDialog
-    };
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      showFissionDialog: nextProps.showDialog
-    });
-  }
-  hideDialog = () => {
-    this.setState({
-      showFissionDialog: false
-    });
-  };
-
+ 
   render() {
+    const {showDialog,clearModal} = this.props
     return (
-      <AtModal isOpened={this.state.showFissionDialog} closeOnClickOverlay={false}>
-        <View className='closeBtn' onClick={this.hideDialog}>
+      <AtModal isOpened={showDialog} closeOnClickOverlay={false}>
+        <View className='closeBtn' onClick={clearModal}>
           <AtIcon value='close' size='14' color='#000'></AtIcon>
         </View>
         <AtModalHeader> 活动规则</AtModalHeader>
@@ -36,7 +24,7 @@ class FissionModal extends Component {
           <View className='modalContentWrap'>
             <Text className='address'>
               邀请流程：\n
-              1.您可在此活动页面内阅读活动细则，并点击下方“微信好友”或“生成美图”按钮转发分享至好友\n
+              1.您可在此活动页面内阅读活动细则，并点击下方“微信好友”按钮转发分享至好友\n
               2.您的好友可通过该分享页面接受邀请，与您进行好友绑定、填写手机号及验证码完成绑定关系；\n
               3.好友绑定成功后，若在活动有效期内成功签约（签约时间大于6个月）则认定您的邀请成功；\n
               4.像素租客每成功邀请一位好友将获得2000颗“像素方糖”奖励，非像素租客每成功邀请一位好友将获得1000颗“像素方糖”奖励。奖励会发放至您参与活动手机号的账户内，请使用此手机号登录“像素公寓”小程序，“个人中心”内查看并消费。\n

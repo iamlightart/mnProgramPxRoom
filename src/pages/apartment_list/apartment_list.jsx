@@ -10,6 +10,7 @@ class ApartmentList extends Component {
       backgroundColor: "#eeeeee"
     };
   }
+  onShareAppMessage() {}
   render() {
     return (
         <WebView

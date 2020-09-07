@@ -90,8 +90,10 @@ const config = {
     "@/assets": path.resolve(__dirname, "..", "src/assets"),
     "@/package": path.resolve(__dirname, "..", "package.json"),
     "@/project": path.resolve(__dirname, "..", "project.config.json"),
-    '@/globalApi': path.resolve(__dirname, '..', 'src/globalApi'),
-    '@/store': path.resolve(__dirname, '..', 'src/store')
+    '@/global_api': path.resolve(__dirname, '..', 'src/global_api'),
+    '@/store': path.resolve(__dirname, '..', 'src/store'),
+    '@/actions': path.resolve(__dirname, '..', 'src/actions')
+    
   }
 };
 

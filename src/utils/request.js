@@ -31,6 +31,7 @@ function request(param) {
   const defauluHeader = {
     "Content-Type": "application/json; charset=utf-8",
     token: token,
+    Authorization:`Bearer ${token}`,
     seq: new Date().getTime()
   };
   return new Promise(function(resolve, reject) {
@@ -58,10 +59,18 @@ function request(param) {
           if (res.data.code=='100001') {
             Taro.showToast({
               title:'登陆状态已过期,请重新登录',
-              icon: "none"
+              icon: "none",
+              duration:3000
             });
-            Taro.redirectTo({url:'/pages/login/login'})
+            // Taro.redirectTo({url:'/pages/login/login'})
             return
+          }
+          if(res.data.code== "999999"){
+            Taro.showToast({
+              title:'网络通信失败，请稍后再试',
+              icon: "none",
+              duration:3000
+            });
           }
           resolve(res.data);
         }

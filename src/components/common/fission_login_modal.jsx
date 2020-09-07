@@ -1,7 +1,6 @@
 import Taro, { Component } from "@tarojs/taro";
 import { View, Image, Text } from "@tarojs/components";
 import {
-  AtIcon,
   AtModal,
   AtModalHeader,
   AtModalContent,
@@ -15,24 +14,9 @@ class FissionLoginModal extends Component {
     super(props);
     this.config = {
       navigationBarBackgroundColor: "#fdd835",
-      backgroundColor: "#eeeeee"
-    };
-    this.state = {
-      showFissionLoginDialog: this.props.showDialog,
-      // 0:绑定成功 1：更换绑定 2：温馨提示
+      backgroundColor: "#fdd835"
     };
   }
-  componentWillMount() {}
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      showFissionLoginDialog: nextProps.showDialog
-    });
-  }
-  hideDialog = () => {
-    this.setState({
-      showFissionLoginDialog: false
-    });
-  };
   toUserCenter(){
     Taro.switchTab({url:"/pages/index/index"})
   }
@@ -40,7 +24,7 @@ class FissionLoginModal extends Component {
     Taro.switchTab({url:"/pages/apartment_list/apartment_list"})
   }
   render() {
-    const{ name} = this.props
+    const{ name,replaceName='',clear} = this.props
     let modalDataArray = [
       {
         title: "绑定成功",
@@ -48,20 +32,28 @@ class FissionLoginModal extends Component {
       },
       {
         title: "更换绑定",
-        content: `您已将邀请人更换为
-        ${name}`
+        content: `您已接受过 ${replaceName} 的邀请，是否将邀请人更换为 ${name}`
       },
       {
         title: "温馨提示",
-        content: "您已成功入住像素公寓，无法接受邀请。"
+        content: "您已成功入住像素公寓,\n无法接受邀请。"
+      },
+      {
+        title: "温馨提示",
+        content: "推荐人与被推荐人不能相同"
+      },
+      {
+        title: "温馨提示",
+        content: `您已接受过 ${replaceName} 的邀请，无法再次绑定`
       }
     ];
-    const{modalState} = this.props
+     // 0:绑定成功 1：更换绑定 2：温馨提示
+    const{modalState,changeUser,showDialog} = this.props
     return (
-      <AtModal isOpened={this.state.showFissionLoginDialog} closeOnClickOverlay={false}>
-        <View className='closeBtn' onClick={this.hideDialog}>
+      <AtModal isOpened={showDialog} closeOnClickOverlay={false}>
+        {/* <View className='closeBtn' onClick={this.hideDialog}>
           <AtIcon value='close' size='14' color='#000'></AtIcon>
-        </View>
+        </View> */}
         <AtModalHeader>
           {modalDataArray[modalState].title}
         </AtModalHeader>
@@ -76,13 +68,32 @@ class FissionLoginModal extends Component {
               {modalDataArray[modalState].content}
             </Text>
             <View className='buttonWrap'>
+
+            <View
+              className='modalBtn'
+              hidden={
+                 modalState == 0 || modalState == 2
+                }
+            >
+              <AtButton className='modalCancelBtn' onClick={clear}>取消</AtButton>
+              </View>
+              <View className='modalBtn' hidden={modalState != 1}>
+                <AtButton className='modalConfirmBtn' onClick={changeUser}>确认更换</AtButton>
+              </View>
               <View className='modalBtn' hidden={modalState != 0}>
                 <AtButton className='modalConfirmBtn' onClick={this.toHouse.bind(this)} >去逛逛</AtButton>
               </View>
-              <View className='modalBtn' hidden={modalState ===0}>
+              <View className='modalBtn' hidden={modalState !=3}>
+                <AtButton onClick={this.toUserCenter.bind(this)} className='modalConfirmBtn'>去往个人中心</AtButton>
+              </View>
+              <View className='modalBtn' hidden={modalState != 4}>
+                <AtButton onClick={this.toUserCenter.bind(this)} className='modalConfirmBtn'>去往个人中心</AtButton>
+              </View>
+              <View className='modalBtn' hidden={modalState !=2}>
                 <AtButton onClick={this.toUserCenter.bind(this)} className='modalConfirmBtn'>去往个人中心</AtButton>
               </View>
             </View>
+
           </View>
         </AtModalContent>
       </AtModal>

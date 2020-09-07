@@ -5,7 +5,7 @@ import FissionBanner from "@/components/fission/fission_banner";
 import muscleImg from "@/assets/common/muscle.svg";
 import CommonUtils from "@/utils/common_utils";
 
-import { queryRedeemList } from "./userServiceApi";
+import { queryRedeemList } from "./user_service_api";
 import "./my_exchange.scss";
 
 class MyExchange extends Component {
@@ -33,13 +33,23 @@ class MyExchange extends Component {
       isloading: true
     });
     queryRedeemList({ pageNo, pageSize }).then(({ data }) => {
-      const tempArry = dataList.concat(data.list);
-      this.setState({
-        pageNo: pageNo + 1,
-        dataList: tempArry,
-        isAll: tempArry.length === data.totalCount,
-        isloading: false
-      });
+      if(!data){
+        this.setState({
+          pageNo:1,
+          dataList: [],
+          isAll: true,
+          isloading: false
+        });
+      }else{
+        const tempArry = dataList.concat(data.list);
+        this.setState({
+          pageNo: pageNo + 1,
+          dataList: tempArry,
+          isAll: tempArry.length === data.totalCount,
+          isloading: false
+        });
+      }
+     
     });
   }
   getMore() {
@@ -53,14 +63,14 @@ class MyExchange extends Component {
   }
   render() {
     let [wrapHeight, listHeight] = CommonUtils.getInstance().formatHeight(120);
-    const { dataList, isAll, isloading } = this.state;
+    const { dataList, isloading } = this.state;
     return (
       <View className='contentWrap' style={wrapHeight}>
         <View className='fissionBannerWrap'>
           <FissionBanner type='narrow'></FissionBanner>
         </View>
         <View className='myExchangeList'>
-          {dataList.length != 0 && !isloading && isAll && (
+          {dataList.length != 0 && !isloading && (
             <ScrollView
               scrollY
               className='listWrap'
@@ -101,12 +111,11 @@ class MyExchange extends Component {
                     content='加载中...'
                   ></AtActivityIndicator>
                 )}
-                {!isloading && isAll && <View>没有数据了~</View>}
               </View>
             </ScrollView>
           )}
           {/* 以下为缺省状态 */}
-          {dataList.length === 0 && !isloading && isAll && (
+          {dataList.length === 0 && !isloading &&  (
             <View className='defaultContent'>
               <Image src={muscleImg} className='defaultImg'></Image>
               <Text className='defaultInfo'>暂时还未兑换奖品，继续加油咯~</Text>

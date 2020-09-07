@@ -8,8 +8,8 @@ import {
   AtModalContent,
   AtModalAction
 } from "taro-ui";
-import { wxUnbind } from "@/globalApi/index";
-import { SAVE_USER_INFO} from "../../actions/globalActions";
+import { wxUnbind } from "@/global_api/index";
+import { saveUserInfo} from "@/actions/global_actions";
 import "./user_info.scss";
 
 @connect(
@@ -18,7 +18,7 @@ import "./user_info.scss";
   }),
   dispatch => ({
     onSaveMsg(data) {
-      dispatch(SAVE_USER_INFO(data));
+      dispatch(saveUserInfo(data));
     }
   })
 )
@@ -63,14 +63,16 @@ class UserInfo extends Component {
     } else if (this.state.hintModalType == 1) {
       wxUnbind().then(() => {
         this.props.onSaveMsg(null)
-        Taro.reLaunch({ url: "/pages/login/login" });
+        Taro.reLaunch({ url: "/pages/index/index" });
       });
     }
     this.setState({
       showHintModal: false
     });
   };
-
+  toAuthentication(){
+    Taro.navigateTo({ url: "/pages/user_info/authentication/user_authentication" });
+  }
   render() {
     const { showHintModal, hintModalType } = this.state;
     const {userInfo} = this.props
@@ -117,6 +119,14 @@ class UserInfo extends Component {
             onClick={this.showChangeNumberModal}
           >
             换绑手机
+          </AtButton>
+        </View>
+        <View className='buttonWrap'>
+          <AtButton
+            className='userInfoBtn'
+            onClick={this.toAuthentication}
+          >
+            租客认证
           </AtButton>
         </View>
         <View className='buttonWrap'>

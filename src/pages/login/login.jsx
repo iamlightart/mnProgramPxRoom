@@ -1,15 +1,15 @@
 import Taro, { Component } from "@tarojs/taro";
-import logo from "@/assets/login/login_right_logo.svg";
+import logo from "@/assets/login/window_logo.png";
 import welcomeText from "@/assets/login/welcome_text.svg";
 import bottomLogo from "@/assets/login/login_bottom_logo.svg";
 import alertIcon from "@/assets/login/alert_icon.svg";
-import { AtButton, AtForm, AtInput } from "taro-ui";
+import { AtButton, AtInput } from "taro-ui";
 import { connect } from "@tarojs/redux";
 import { View, Image, Text } from "@tarojs/components";
-import { phoneAuthCode } from "@/globalApi/index";
+import { phoneAuthCode } from "@/global_api/index";
 import AuthorityWechatModal from "@/components/common/authority_wechat_modal";
-import { SAVE_USER_INFO } from "../../actions/globalActions";
-import { decodePhoneNumber, enterInfo } from "./serviceApi";
+import { saveUserInfo } from "@/actions/global_actions";
+import { decodePhoneNumber, enterInfo } from "./service_api";
 import "./login.scss";
 
 @connect(
@@ -18,7 +18,7 @@ import "./login.scss";
   }),
   dispatch => ({
     onSaveMsg(data) {
-      dispatch(SAVE_USER_INFO(data));
+      dispatch(saveUserInfo(data));
     }
   })
 )
@@ -38,19 +38,28 @@ class Login extends Component {
       disableLogin: true,
       wxMobile: "",
       wxModal: false,
-      count: 60
+      count: 60,
+      requestFlag:null
     };
     this._mytimer;
   }
 
   componentWillMount() {
-    this.setState({
-      path: this.$router.params.path
+    const source =this.$router.params.path
+    this.setState(()=>{
+      return{
+        path: source
+      }
     });
-  }
-  shouldComponentUpdate(nextProps) {
-    if (nextProps.userInfo) {
+    
+    if (this.props.userInfo) {
       Taro.switchTab({ url: "/pages/index/index" });
+    }
+  }
+  shouldComponentUpdate(nextProps,nextState) {
+    if (nextProps.userInfo&&!nextState.path) {
+      Taro.switchTab({ url: "/pages/index/index" });
+      return false;
     }
     return true;
   }
@@ -121,13 +130,13 @@ class Login extends Component {
     try {
       if (encryptedData && iv) {
         decodePhoneNumber({ encryptedData, iv }).then(({ data }) => {
-          this.setState({
-            loading: false,
-            wxModal: true,
-            wxMobile: data.phoneNumber
+          this.setState(()=>{
+            return{
+              loading: false,
+              wxModal: true,
+              wxMobile: data.phoneNumber
+            }
           });
-          // const {phoneNumber} = data
-          // enterInfo()
         });
       }
     } finally {
@@ -140,57 +149,39 @@ class Login extends Component {
     const { disableLogin } = this.state;
     if (disableLogin) {
       Taro.showToast({
-        title: "账号或密码不能为空！",
+        title: "账号或验证码长度不正确！",
         icon: "none"
       });
       return;
     }
     const { userInfo } = e.detail;
     if (userInfo) {
-      const { account, password, path } = this.state;
+      const { account, password} = this.state;
       const { nickName, avatarUrl, gender } = userInfo;
       let param = {
         tel: account,
         smsCode: password,
-        nickName,
+        nickName:nickName?nickName:'微信'+account,
         avatar: avatarUrl,
         sex: gender,
         type: 1
       };
-      enterInfo(param).then(({ data }) => {
-        if (data) {
-          this.props.onSaveMsg(data);
-          if (path) {
-            Taro.redirectTo({ url: path });
-          } else {
-            Taro.switchTab({ url: "/pages/index/index" });
-          }
-        }
-      });
+      this.loginFN(param)
     }
   }
   useWxlogin(e) {
     const { userInfo } = e.detail;
     if (userInfo) {
-      const { wxMobile, path } = this.state;
+      const { wxMobile } = this.state;
       const { nickName, avatarUrl, gender } = userInfo;
       let param = {
         tel: wxMobile,
-        nickName,
+        nickName:nickName?nickName:'微信'+wxMobile,
         avatar: avatarUrl,
         sex: gender,
         type: 2
       };
-      enterInfo(param).then(({ data }) => {
-        if (data) {
-          this.props.onSaveMsg(data);
-          if (path) {
-            Taro.redirectTo({ url: path });
-          } else {
-            Taro.switchTab({ url: "/pages/index/index" });
-          }
-        }
-      });
+      this.loginFN(param)
     }
   }
   closeAuthModal() {
@@ -198,10 +189,48 @@ class Login extends Component {
       wxModal: false
     });
   }
+  loginFN(param){
+    const {requestFlag,path} = this.state
+    if(requestFlag) return
+     this.setState(()=>{
+       return{
+        requestFlag:true
+       }
+     })
+      enterInfo(param).then(( res) => {
+        if (this._mytimer) clearTimeout(this._mytimer);
+        this.setState(()=>{
+          return{
+            requestFlag:false,
+            count: 60
+           }
+        })
+        
+        if (res.code=='000000') {
+          this.props.onSaveMsg(res.data);
+          if (path) {
+            Taro.redirectTo({ url: path });
+          } else {
+            Taro.switchTab({ url: "/pages/index/index" });
+          }
+        }else{
+          Taro.showToast({title:res.msg||'登陆失败',icon:'none'})
+        }
+      })
+      .catch(()=>{
+        if (this._mytimer) clearTimeout(this._mytimer);
+        this.setState(()=>{
+          return{
+            requestFlag:false,
+            count: 60
+           }
+        })
+      })
+    
+  }
   render() {
     const { count, hasAuthCode, wxModal } = this.state;
     let windowHeightStyle = `height:${Taro.getSystemInfoSync().windowHeight}px`;
-
     return (
       <View className='login-wrap' style={windowHeightStyle}>
         <AuthorityWechatModal
@@ -212,12 +241,11 @@ class Login extends Component {
         <View className='circle'></View>
         <View className='form-top-circle'></View>
         <Image className='title-pic' src={welcomeText} />
-        <Image className='top-logo' src={logo} />
+        <Image className='top-logo' src={logo} mode='widthFix' />
         {/* 中间表单 */}
         <View className='content-wrap'>
           <View className='form-box'>
             <View className='form-desc'>
-              {" "}
               <Image className='point-icon' src={alertIcon} />
               在租租客请使用签约手机号登录，收益可翻倍！
             </View>
@@ -246,7 +274,7 @@ class Login extends Component {
                 </AtButton>
               ) : (
                 <AtButton size='small' circle className='hintMsg getAuthCode'>
-                  {count}
+                  重新获取（{count}）
                 </AtButton>
               )}
               <AtInput

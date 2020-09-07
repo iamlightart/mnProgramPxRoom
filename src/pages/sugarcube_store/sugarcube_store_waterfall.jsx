@@ -4,7 +4,7 @@ import FissionBanner from "@/components/fission/fission_banner";
 import GoodsContainer from "@/components/sugarcube_store/goods_container";
 
 import "./sugarcube_store_waterfall.scss";
-import queryGiftList from "./shopingApi";
+import queryGiftList from "./shoping_api";
 
 class SugarcubeStoreWaterfall extends Component {
   constructor(props) {
@@ -25,6 +25,15 @@ class SugarcubeStoreWaterfall extends Component {
   componentWillMount() {
     this.getListData();
   }
+  componentDidMount = () => {
+    const query = Taro.createSelectorQuery().in(this);
+    query
+      .select("#unitGrid")
+      .boundingClientRect(function(res) {
+        res;
+      })
+      .exec();
+  };
   getListData(index = 1) {
     this.setState({
       loading: true
@@ -64,7 +73,7 @@ class SugarcubeStoreWaterfall extends Component {
         </View>
         <View className='sugarcubeStoreWrap'>
           <GoodsContainer
-            containerTitle='商品明细'
+            containerTitle='商品列表'
             unitType='waterfall'
             showSugarcubeBtn
             dataList={lisData}

@@ -23,20 +23,7 @@ class ExchangeStatusModal extends Component {
       navigationBarBackgroundColor: "#fdd835",
       backgroundColor: "#eeeeee"
     };
-    this.state = {
-      showStatusDialog: this.props.showDialog,
-    };
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      showStatusDialog: nextProps.showDialog
-    });
-  }
-  hideDialog = () => {
-    this.setState({
-      showStatusDialog: false
-    });
-  };
   backIndex(){
     Taro.switchTab({url:'/pages/index/index'})
   }
@@ -44,15 +31,16 @@ class ExchangeStatusModal extends Component {
     Taro.navigateTo({url:'/pages/ads/fission_promotion'})
   }
   render() {
+    const {showDialog,modalState,clearModal}= this.props
     return (
-      <AtModal isOpened={this.state.showStatusDialog} closeOnClickOverlay={false}>
+      <AtModal isOpened={showDialog} closeOnClickOverlay={false}>
 
         {/* 无法兑换 */}
-        <View hidden={this.props.modalState != 0}>
+        <View hidden={modalState != 0}>
           <View
             className='closeBtn'
-            onClick={this.hideDialog}
-            hidden={this.props.modalState}
+            onClick={clearModal}
+            hidden={modalState}
           >
             <AtIcon value='close' size='14' color='#000'></AtIcon>
           </View>
@@ -75,11 +63,11 @@ class ExchangeStatusModal extends Component {
         </View>
 
           {/* 申请成功 */}
-        <View hidden={this.props.modalState != 1}>
+        <View hidden={modalState != 1}>
           <View
             className='closeBtn'
-            onClick={this.hideDialog}
-            hidden={this.props.modalState}
+            onClick={clearModal}
+            hidden={modalState}
           >
             <AtIcon value='close' size='14' color='#000'></AtIcon>
           </View>
@@ -88,8 +76,8 @@ class ExchangeStatusModal extends Component {
             <View className='modalContentWrap'>
               <Image src={prizeImg} className='modalPic'></Image>
               <Text className='modalContent'>
-                我们已收到您的兑奖申请，兑奖记录可在“我的兑换”中查看，奖品将于
-                <Text className='orange'>7</Text>日内发出， 请注意查收
+                我们已收到您的兑奖申请，\n兑奖记录可在“我的兑换”中查看，\n奖品将于
+                <Text className='orange'>7</Text>日内发出，\n请注意查收
               </Text>
               <View className='buttonWrap'>
                 <View className='modalBtn'>
@@ -99,11 +87,11 @@ class ExchangeStatusModal extends Component {
             </View>
           </AtModalContent>
         </View>
-        <View hidden={this.props.modalState != 2}>
+        <View hidden={modalState != 2}>
           <View
             className='closeBtn'
-            onClick={this.hideDialog}
-            hidden={this.props.modalState}
+            onClick={clearModal}
+            hidden={modalState}
           >
             <AtIcon value='close' size='14' color='#000'></AtIcon>
           </View>
@@ -114,8 +102,8 @@ class ExchangeStatusModal extends Component {
             <View className='modalContentWrap'>
               <Image src={purseImg} className='modalPic'></Image>
               <Text className='modalContent'>
-                我们已收到您的兑奖申请，兑奖记录可在“我的兑换”中查看， 款项将于
-                <Text className='orange'>7</Text>个工作日到账， 请注意查收
+                我们已收到您的兑奖申请，\n兑奖记录可在“我的兑换”中查看，\n款项将于
+                <Text className='orange'>7</Text>个工作日到账，\n请注意查收
               </Text>
               <View className='buttonWrap'>
                 <View className='modalBtn'>

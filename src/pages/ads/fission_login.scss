@@ -1,11 +1,12 @@
 page {
-  background-color: #fdeb94;
+  background-color: #fdd835;
 }
 
 .page-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #fdd835;
 }
 
 .top-content {
@@ -22,7 +23,7 @@ page {
     height: 800px;
     position: absolute;
     top: -450px;
-    z-index: -1;
+    z-index: 0;
   }
 
   .avatar-wrap {
@@ -31,6 +32,7 @@ page {
     align-items: center;
     margin-top: 70px;
     margin-left: 60px;
+    z-index: 1;
 
     .avatar-img {
       border: 4px solid #ffffff;
@@ -120,11 +122,14 @@ page {
 
 .apartment-content {
   width: 100%;
-  background-color: #fef3c0;
+  // background-color: #fef3c0;
+  background: linear-gradient(#fef3c0, #fef3c0, #ffffff);
+  /* 标准的语法 */
   height: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
 
   .divider-wrap {
     margin-top: -20px;

@@ -5,7 +5,7 @@ import FissionBanner from "@/components/fission/fission_banner";
 import cubeBtnImg from "@/assets/common/cube_icon.svg";
 import muscleImg from "@/assets/common/muscle.svg";
 import CommonUtils from "@/utils/common_utils";
-import { totalRecommend, coustomerList } from "./userServiceApi";
+import { totalRecommend, coustomerList } from "./user_service_api";
 import "./my_recommends.scss";
 
 class MyRecommends extends Component {
@@ -32,9 +32,12 @@ class MyRecommends extends Component {
   }
   queryTotal() {
     totalRecommend().then(({ data }) => {
-      this.setState({
-        totalData: data
-      });
+      if(data){
+        this.setState({
+          totalData: data
+        });
+      }
+    
     });
   }
   queryBind() {
@@ -43,12 +46,14 @@ class MyRecommends extends Component {
       isloading: true
     });
     coustomerList({ pageSize, pageNo }).then(({ data }) => {
-      const tempArry = recommendList.concat(data.list);
-      this.setState({
-        recommendList: tempArry,
-        isloading: false,
-        isAll: tempArry.length === data.totalCount
-      });
+      if(data){
+        const tempArry = recommendList.concat(data.list);
+        this.setState({
+          recommendList: tempArry,
+          isloading: false,
+          isAll: tempArry.length === data.totalCount
+        });
+      }
     });
   }
 
@@ -63,11 +68,11 @@ class MyRecommends extends Component {
         <View className='myRecommendsList'>
           <View className='myrecommendsListHeader'>
             <Text className='headerFirstLine'>
-              您已绑定{totalData.bindCount}人，成功推荐{totalData.signCount}人
+              您已邀请{totalData.bindCount||0}人，成功推荐{totalData.signCount||0}人
             </Text>
             <View className='headerSecondLine'>
               已累积获得
-              <View className='totalAcquire'>{totalData.incomeScore}</View>
+              <View className='totalAcquire'>{totalData.incomeScore||0}</View>
               <Image src={cubeBtnImg} className='cubeBtnImg'></Image>
             </View>
           </View>
@@ -103,7 +108,7 @@ class MyRecommends extends Component {
                     <View className='listTd'>
                       {item.targetTel.substring(0, 3) +
                         "****" +
-                        item.targetTel.substring(-1, 4)}
+                        item.targetTel.substring(7, 11)}
                     </View>
                     <View className='listTd'>
                       {item.signFlag === 1 ? "是" : "否"}

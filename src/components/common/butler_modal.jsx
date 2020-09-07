@@ -2,7 +2,7 @@ import Taro, { Component } from "@tarojs/taro";
 import { View, Image, Text, Picker } from "@tarojs/components";
 import { AtIcon, AtModal, AtModalHeader, AtModalContent } from "taro-ui";
 import buterDialog from "@/assets/user_center/butler_dialog.svg";
-import { queryHousekeeper } from "@/globalApi/index";
+import { queryHousekeeper } from "@/global_api/index";
 import AuthorityModal from "@/components/common/authority_modal";
 
 import "./butler_modal.scss";
@@ -18,24 +18,12 @@ class ButlerModal extends Component {
       currentIndex: 0,
       AuthModal: false,
       addressSelectorChecked: {},
-      stewardList: [],
-      showButlerDialog: this.props.showDialog
+      stewardList: []
     };
   }
   componentWillMount() {
     this.queryListData();
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      showButlerDialog: nextProps.showDialog
-    });
-  }
-  hideButerDialog = () => {
-    this.setState({
-      showButlerDialog: false
-    });
-  };
-
   onAddressChange = e => {
     this.setState({
       addressSelectorChecked: this.state.stewardList[e.detail.value],
@@ -59,7 +47,6 @@ class ButlerModal extends Component {
         Taro.downloadFile({
           url: imagePath,
           success: function(res) {
-            console.log(res);
             Taro.saveImageToPhotosAlbum({
               filePath: res.tempFilePath,
               success: function() {
@@ -95,42 +82,48 @@ class ButlerModal extends Component {
   render() {
     const {
       stewardList,
-      showButlerDialog,
       addressSelectorChecked,
       currentIndex,
       AuthModal
     } = this.state;
+    const { clearModal, showDialog } = this.props;
     return (
-      <AtModal isOpened={showButlerDialog} closeOnClickOverlay={false}>
-        <View className='closeBtn' onClick={this.hideButerDialog}>
+      <AtModal isOpened={showDialog} closeOnClickOverlay={false}>
+        <View className='closeBtn' onClick={clearModal}>
           <AtIcon value='close' size='14' color='#000'></AtIcon>
         </View>
         <AtModalHeader> 联系管家</AtModalHeader>
         <AtModalContent>
           <View className='modalContentWrap'>
             <Image src={buterDialog} className='butlerDialogImg'></Image>
-            {/* <View className='address'>中德英伦联邦1栋3单元1238-D</View> */}
-
-            <Picker
-              mode='selector'
-              rangeKey='houseName'
-              value={currentIndex}
-              range={stewardList}
-              onChange={this.onAddressChange}
-            >
-              <View className='addressPicker'>
-                <View className='addressContent'>
-                  {addressSelectorChecked.houseName}
-                </View>
-                <View className='toggleDown'>
-                  <AtIcon
-                    value='chevron-down'
-                    size='14'
-                    color='#9E9E9E'
-                  ></AtIcon>
-                </View>
+            {/*  */}
+            {stewardList.length === 1 && (
+              <View className='address'>
+                {addressSelectorChecked.houseName}
               </View>
-            </Picker>
+            )}
+            {stewardList.length > 1 && (
+              <Picker
+                mode='selector'
+                rangeKey='houseName'
+                value={currentIndex}
+                range={stewardList}
+                onChange={this.onAddressChange}
+              >
+                <View className='addressPicker'>
+                  <View className='addressContent'>
+                    {addressSelectorChecked.houseName}
+                  </View>
+                  <View className='toggleDown'>
+                    <AtIcon
+                      value='chevron-down'
+                      size='14'
+                      color='#9E9E9E'
+                    ></AtIcon>
+                  </View>
+                </View>
+              </Picker>
+            )}
 
             <Image
               src={addressSelectorChecked.houseKeeperQrcode}

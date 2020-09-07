@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
-import counter from './counter'
-import  globalStore from "./globalStore";
+import houseStore from './house_store'
+import  globalStore from "./global_store";
 
 export default combineReducers({
-  counter,
+  houseStore,
   globalStore
 })

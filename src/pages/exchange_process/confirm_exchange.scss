@@ -1,11 +1,13 @@
-page{
+page {
   background-color: #eeeeee;
 }
+
 .contentWrap {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .whiteBoard {
   width: 700px;
   position: relative;
@@ -18,8 +20,9 @@ page{
   display: flex;
   flex-direction: column;
 }
-.paraWrap{
-  width:100%
+
+.paraWrap {
+  width: 100%
 }
 
 .bottomWrap {
@@ -31,6 +34,7 @@ page{
   bottom: 0px;
   border-top: 1px #E1E1E1 solid;
   background-color: #fff;
+
   .exchangeNumber {
     font-size: 24px;
     width: 90%;
@@ -39,7 +43,8 @@ page{
     align-items: center;
     margin: 20px 0px;
   }
-  .confirmExchangeBtnWrap {    
+
+  .confirmExchangeBtnWrap {
     width: 100%;
   }
 }

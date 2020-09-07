@@ -62,12 +62,14 @@ class ExchangeStartModal extends Component {
           <View className='modalContentWrap'>
             <View className='hintInfo'>
               <View className='infoRow'>
-                确认消耗 <Text className='orange'>{number * type.redeemPrice}</Text>
+                确认消耗
+                <Text className='orange'>{number * type.redeemPrice}</Text>
                 <Image src={cubeBtnImg} className='cubeBtnImg'></Image>
               </View>
-              <View className='infoRow'>
-                兑换<Text className='goodsName'>{type.name}</Text>
-                <Text className='orange'> x{number}</Text>
+              <View>
+                兑换
+                <Text className='goodsName'>{type.name}</Text>
+                  <Text className='orange'> x{number}</Text>
               </View>
             </View>
             <View className='goodsImageWrap'>

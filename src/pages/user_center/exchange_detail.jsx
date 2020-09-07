@@ -2,7 +2,7 @@ import Taro, { Component } from "@tarojs/taro";
 import { View } from "@tarojs/components";
 import GoodsUnitRow from "@/components/sugarcube_store/goods_unit_row";
 import ParaDisplay from "@/components/common/para_display";
-import { queryRedeemDetails } from "./userServiceApi";
+import { queryRedeemDetails } from "./user_service_api";
 import "./exchange_detail.scss";
 
 class ExchangeDetail extends Component {
@@ -10,7 +10,7 @@ class ExchangeDetail extends Component {
     super(props);
     this.config = {
       navigationBarTitleText: "兑换详情",
-      navigationBarBackgroundColor: "#ffffff"
+      navigationBarBackgroundColor: "#eeeeee"
     };
     this.state = {
       detailsData:{}
@@ -42,7 +42,7 @@ class ExchangeDetail extends Component {
              goodsID={item.itemId}
              goodsType={item.type}
              goodsName={item.name}
-             goodsValue={item.content}
+             goodsValue={`价值 ${item.price} 元`}
              goodsPrice={item.redeemPrice}
              showExchangeBtn={false}
            ></GoodsUnitRow>
@@ -69,7 +69,7 @@ class ExchangeDetail extends Component {
            <ParaDisplay
              title='兑换说明'
              content={
-               `1.兑换成功后，可在“我的兑换”中查看\n2.此奖品每兑换1件将消耗${item.redeemPrice}方糖，兑换成功后方糖不予退还；\n3.此奖品默认申请兑换后7天发货，有任何疑问，欢迎致电客服热线 400 806 3399 （服务时间为每周一到周六：08:30-17:45）`
+               `1.兑换成功后，可在“我的兑换”中查看\n2.此奖品每兑换1件将消耗${item.redeemPrice}方糖，兑换成功后方糖不予退还；\n3.此奖品默认申请兑换后7天发货，有任何疑问，欢迎致电客服热线 400 806 3399 （服务时间为每天：08:30-17:45）`
              }
            ></ParaDisplay>
          </View>

@@ -8,9 +8,9 @@ import ExchangeStatusModal from "@/components/common/exchange_status_modal";
 import { connect } from "@tarojs/redux";
 import { AtDivider, AtButton } from "taro-ui";
 import FissionBanner from "@/components/fission/fission_banner";
-import { queryUserInfo } from "@/globalApi/index";
-import { querybankinfo,updateBankinfo,cashRedeem } from "./serviceExchangeApi";
-import { SAVE_USER_INFO } from "../../actions/globalActions";
+import { updateUserInfo } from "@/actions/global_actions";
+import LoginModal from "@/components/common/login_modal/to_login_modal";
+import { querybankinfo,updateBankinfo,cashRedeem } from "./service_exchange_api";
 import "./exchange_info_editor.scss";
 // 虚拟商品兑奖页面
 
@@ -19,8 +19,8 @@ import "./exchange_info_editor.scss";
     ...globalStore
   }),
   dispatch => ({
-    onSaveMsg(data) {
-      dispatch(SAVE_USER_INFO(data));
+    onUpdateMsg() {
+      dispatch(updateUserInfo());
     }
   })
 )
@@ -47,7 +47,8 @@ class EditAddress extends Component {
         bankCardName: "",
         bankCardNumber: "",
         bankName: ""
-      }
+      },
+      loginModal:false
     };
   }
   componentWillMount() {
@@ -55,7 +56,7 @@ class EditAddress extends Component {
   }
   getBankMsg() {
     querybankinfo().then(({ data }) => {
-      if (data.bankCardNumber) {
+      if (data&&data.bankCardNumber) {
         this.setState({
           infoState: 1,
           bankinfo: data
@@ -77,20 +78,28 @@ class EditAddress extends Component {
     return value;
   }
   submitBankinfo() {
-    const { editBank } =this.state
-    const {bankCardName,bankCardNumber,bankName} = editBank
-    if(bankCardName&&bankCardNumber&&bankName){
-      updateBankinfo(editBank).then(()=>{
-        this.getBankMsg()
-        setTimeout(()=>{
-          this.setState({
-            infoState:1
-          })
-        },1000)
-      })
+    const {userInfo} = this.props
+    if(userInfo){
+      const { editBank } =this.state
+      const {bankCardName,bankCardNumber,bankName} = editBank
+      if(bankCardName&&bankCardNumber&&bankName){
+        updateBankinfo(editBank).then(()=>{
+          this.getBankMsg()
+          setTimeout(()=>{
+            this.setState({
+              infoState:1
+            })
+          },1000)
+        })
+      }else{
+        Taro.showToast({title:'请将银行卡信息填写完整',icon:'none'})
+      }
     }else{
-      Taro.showToast({title:'请将银行卡信息填写完整',icon:'none'})
+      this.setState({
+        loginModal:true
+      })
     }
+   
   }
   changeEditStatus(){
     this.setState({
@@ -116,13 +125,23 @@ class EditAddress extends Component {
           modalState:0
         });
       }
-      queryUserInfo().then(({result})=>{
-        this.props.onSaveMsg(result.data);
-      })
+     
+        this.props.onUpdateMsg();
+    
     })
   }
+  closeExhangeDialog(){
+    this.setState({
+      showExhangeDialog:false
+    })
+  }
+  closeLoginModal() {
+    this.setState({
+      loginModal: false
+    });
+  }
   render() {
-    const { bankinfo, editBank,modalState } = this.state;
+    const { bankinfo, editBank,modalState ,loginModal} = this.state;
     const { userInfo, goods } = this.props;
     return (
       <View>
@@ -130,6 +149,7 @@ class EditAddress extends Component {
         <ExchangeStatusModal
           modalState={modalState}
           showDialog={this.state.showExhangeDialog}
+          clearModal={this.closeExhangeDialog.bind(this)}
         ></ExchangeStatusModal>
         <View className='contentWrap' hidden={this.state.infoState != 0}>
           <FissionBanner type='narrow'></FissionBanner>
@@ -206,7 +226,7 @@ class EditAddress extends Component {
                 goodsID={goods.type.itemId}
                 goodsType={goods.type.type}
                 goodsName={goods.type.name}
-                goodsValue={goods.type.content}
+                goodsValue={`价值 ${goods.type.price} 元`}
                 goodsPrice={goods.type.redeemPrice}
                 showExchangeBtn={false}
               ></GoodsUnitRow>
@@ -229,6 +249,10 @@ class EditAddress extends Component {
             </View>
           </View>
         </View>
+        <LoginModal  
+          showDialog={loginModal}
+          clearModal={this.closeLoginModal.bind(this)}
+        ></LoginModal>
       </View>
     );
   }

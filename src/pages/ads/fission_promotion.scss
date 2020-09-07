@@ -1,9 +1,11 @@
 page {
   background-color: #fdd835;
 }
+
 .header-place-holder {
-  background-color: #EE741B;
+  background-color: #ee741b;
   position: relative;
+
   .back-to-center-btn {
     position: absolute;
     z-index: 3;
@@ -13,11 +15,13 @@ page {
     bottom: 0px;
   }
 }
+
 .page-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .top-content {
   width: 100%;
   height: 270px;
@@ -26,6 +30,7 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
+
   .top-bg-pic {
     width: 300%;
     height: 800px;
@@ -33,12 +38,14 @@ page {
     top: -440px;
     z-index: -1;
   }
+
   .top-text-pic {
     width: 435px;
     height: 162px;
     position: relative;
     top: 10px;
   }
+
   .detail-btn {
     position: absolute;
     z-index: 3;
@@ -58,18 +65,21 @@ page {
   display: flex;
   justify-content: center;
 }
+
 .left-indicator {
   width: 27px;
   position: absolute;
   left: 0;
   top: 215px;
 }
+
 .right-indicator {
   width: 27px;
   position: absolute;
   right: 0;
   bottom: 15px;
 }
+
 .middle-content {
   width: 692px;
   height: 900px;
@@ -83,6 +93,7 @@ page {
   flex-direction: column;
   align-items: center;
 }
+
 .middle-logo-pic {
   width: 168px;
   height: 187px;
@@ -91,16 +102,19 @@ page {
   top: -105px;
   z-index: 2;
 }
+
 .explain-box {
   width: 100%;
   height: 320px;
   margin-top: 90px;
+
   .icon-logo-pic {
     width: 37px;
     height: 41px;
     vertical-align: bottom;
     margin-right: 10px;
   }
+
   .explain {
     width: 483px;
     font-size: 25px;
@@ -109,6 +123,7 @@ page {
     font-weight: 400;
     text-align: center;
   }
+
   .orange {
     margin: 0 5px;
     font-size: 38px;
@@ -116,28 +131,35 @@ page {
     vertical-align: bottom;
   }
 }
+
 .gift-pic-box {
   position: relative;
   display: flex;
   justify-content: center;
+
   .gift_pic {
     width: 450px;
     height: 242px;
   }
+
   margin-bottom: 20px;
 }
+
 .divider-box {
   position: relative;
   top: -30px;
   width: 500px;
   margin: 0 auto;
+
   .orange {
     margin: 0 10px;
   }
 }
+
 .step-hint-box {
   position: relative;
 }
+
 .surround-boxs {
   display: flex;
 
@@ -151,6 +173,7 @@ page {
     display: flex;
     align-items: center;
     justify-content: center;
+
     .text-box {
       font-size: 28px;
       font-weight: 400;
@@ -158,6 +181,7 @@ page {
       width: 117px;
     }
   }
+
   .surround-box.right {
     right: 0;
     top: 0;
@@ -177,18 +201,20 @@ page {
   );
   box-shadow: 0px 5px 3px rgba(255, 109, 0, 0.8);
 }
+
 .bottom-menu {
   box-shadow: 0px -4px 4px rgba(0, 0, 0, 0.03);
   width: 100%;
   height: 220px;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   background: #ffffff;
   z-index: 3;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
+
   .btn-box {
     display: flex;
     flex-direction: column;
@@ -196,15 +222,18 @@ page {
     height: 150px;
     // background: red;
     border: 0px;
+
     .menu-item {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+
     .menu-icon {
       width: 85px;
       height: 85px;
     }
+
     .menu-text {
       margin-top: 20px;
       color: #515151;
@@ -212,5 +241,13 @@ page {
       font-size: 28px;
       line-height: 28px;
     }
+  }
+}
+
+.shareToMoments {
+  display: flex;
+  .shareToMomentsImg {
+    margin: auto;
+    width: 90%;
   }
 }

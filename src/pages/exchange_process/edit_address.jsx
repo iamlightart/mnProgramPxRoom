@@ -9,10 +9,10 @@ import { AtDivider, AtButton } from "taro-ui";
 import ExchangeStatusModal from "@/components/common/exchange_status_modal";
 import FissionBanner from "@/components/fission/fission_banner";
 import { connect } from "@tarojs/redux";
-import { queryUserInfo } from "@/globalApi/index";
 import AuthorityModal from "@/components/common/authority_modal";
-import { entityRedeem } from "./serviceExchangeApi";
-import { SAVE_USER_INFO } from "../../actions/globalActions";
+import { updateUserInfo } from "@/actions/global_actions";
+import LoginModal from "@/components/common/login_modal/to_login_modal";
+import { entityRedeem } from "./service_exchange_api";
 
 import "./exchange_info_editor.scss";
 // 实体商品编辑地址的页面
@@ -21,8 +21,8 @@ import "./exchange_info_editor.scss";
   ...globalStore
 }),
 dispatch => ({
-  onSaveMsg(data) {
-    dispatch(SAVE_USER_INFO(data));
+  onUpdateMsg() {
+    dispatch(updateUserInfo());
   }
 })
 )
@@ -37,17 +37,23 @@ class EditAddress extends Component {
     this.state = {
       // 第一次为0，添加微信地址页面，点击选择后跳转选择地址页面，选择后跳转回并切换状态1
       // 在有地址的时候默认为状态1
-      addressState: 0,
+      addressState: 0, //0 无货地址
       modalState: 1,
       AuthModal: false,
       showExhangeDialog: false,
       address: {},
+      loginModal:false,
       receptionAddress: ""
     };
   }
   closeAuthModal(){
     this.setState({
       AuthModal: false,
+    })
+  }
+  closeExhangeDialog(){
+    this.setState({
+      showExhangeDialog:false
     })
   }
   getAddress() {
@@ -64,48 +70,61 @@ class EditAddress extends Component {
           addressState: 1
         });
       },
-      fail: function() {
-        _this.setState({
-          AuthModal: true
-        });
+      fail: function(err) {
+        if(err.errMsg=='chooseAddress:fail auth deny'){
+          _this.setState({
+            AuthModal: true
+          });
+        }
       }
     });
   }
   convertGift() {
-    const param = {
-      address: this.state.receptionAddress,
-      itemCount: this.props.goods.number,
-      itemId: this.props.goods.type.itemId,
-      name: this.state.address.userName,
-      tel: this.props.userInfo.tel
-    };
-    entityRedeem(param).then(( res) => {
-      if (res.code == "300003") {
-        this.setState({
-          showExhangeDialog: true,
-          modalState: 0
-        });
-      } else if (res.code == "000000") {
-        this.setState({
-          showExhangeDialog: true,
-          modalState: 1
-        });
-      }
-      queryUserInfo().then(({result})=>{
-        console.log('props',this.props)
-        this.props.onSaveMsg(result.data);
+    const {userInfo} = this.props
+    if(userInfo){
+      const param = {
+        address: this.state.receptionAddress,
+        itemCount: this.props.goods.number,
+        itemId: this.props.goods.type.itemId,
+        name: this.state.address.userName,
+        tel:this.state.address.telNumber?this.state.address.telNumber: this.props.userInfo.tel
+      };
+      entityRedeem(param).then(( res) => {
+        if (res.code == "300003") {
+          this.setState({
+            showExhangeDialog: true,
+            modalState: 0
+          });
+        } else if (res.code == "000000") {
+          this.setState({
+            showExhangeDialog: true,
+            modalState: 1
+          });
+        }
+        this.props.onUpdateMsg();
+      });
+    }else{
+      this.setState({
+        loginModal:true
       })
+    }
+   
+  }
+  closeLoginModal() {
+    this.setState({
+      loginModal: false
     });
   }
   render() {
     const { goods, userInfo } = this.props;
-    const { address, receptionAddress, AuthModal } = this.state;
+    const { address, receptionAddress, AuthModal,loginModal } = this.state;
     return (
       <View>
         {/* 单独封装了三个状态的ExchangeModal */}
         <ExchangeStatusModal
           showDialog={this.state.showExhangeDialog}
           modalState={this.state.modalState}
+          clearModal={this.closeExhangeDialog.bind(this)}
         ></ExchangeStatusModal>
         <View className='contentWrap' hidden={this.state.addressState != 0}>
           <FissionBanner type='narrow'></FissionBanner>
@@ -117,6 +136,7 @@ class EditAddress extends Component {
             <View className='buttonWrap'>
               <AtButton
                 openSetting
+                full
                 onClick={this.getAddress.bind(this)}
                 className='modalConfirmBtn'
               >
@@ -127,14 +147,14 @@ class EditAddress extends Component {
         </View>
         <View className='contentWrap' hidden={this.state.addressState != 1}>
           <View className='whiteBoard'>
-            <View className='addressWrap'>
+            <View className='addressWrap'  onClick={this.getAddress.bind(this)}>
               <View className='locationWrap'>
                 <Image src={locationImg} className='locationImg'></Image>
               </View>
               <View className='addressInfo'>
                 <View className='firstLine'>
                   <Text className='name'>{address.userName}</Text>
-                  <Text className='phoneNum'>{userInfo.tel}</Text>
+                  <Text className='phoneNum'>{address.telNumber?address.telNumber:userInfo.tel}</Text>
                 </View>
                 <View className='address'>{receptionAddress}</View>
               </View>
@@ -145,6 +165,7 @@ class EditAddress extends Component {
                 ></Image>
               </View>
             </View>
+
           </View>
           <View className='whiteBoard confirmWrap'>
             <View className='exchangeTitle'>兑换奖品</View>
@@ -156,7 +177,7 @@ class EditAddress extends Component {
                 goodsID={goods.type.itemId}
                 goodsType={goods.type.type}
                 goodsName={goods.type.name}
-                goodsValue={goods.type.content}
+                goodsValue={`价值 ${goods.type.price} 元`}
                 goodsPrice={goods.type.redeemPrice}
                 showExchangeBtn={false}
               ></GoodsUnitRow>
@@ -183,6 +204,10 @@ class EditAddress extends Component {
           </View>
         </View>
         <AuthorityModal showDialog={AuthModal} closeModal={this.closeAuthModal.bind(this)} content='需要使用您的通讯地址，用于收取快递'></AuthorityModal>
+        <LoginModal  
+          showDialog={loginModal}
+          clearModal={this.closeLoginModal.bind(this)}
+        ></LoginModal>
       </View>
     );
   }

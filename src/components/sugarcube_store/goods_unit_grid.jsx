@@ -7,9 +7,10 @@ import "./goods_unit_grid.scss";
 
 */
 class GoodsUnitGrid extends Component {
- 
-  confirmExchange(){
-    const { goodsID } = this.props;
+
+  confirmExchange() {
+    const { goodsID, isLink = false } = this.props;
+    if (isLink) return;
     Taro.navigateTo({
       url: "/pages/exchange_process/confirm_exchange?goodsID=" + goodsID
     });
@@ -19,12 +20,16 @@ class GoodsUnitGrid extends Component {
 
   render() {
     return (
-      <View className='goodsUnitGridWrap' onClick={this.confirmExchange}>
+      <View
+        className='goodsUnitGridWrap'
+        onClick={this.confirmExchange}
+      >
         <Image
           mode='widthFix'
           src={this.props.imgSrc}
           className='goodsImg'
-          webp lazyLoad
+          webp
+          lazyLoad
         ></Image>
         <View className='goodsInfo'>
           <View className='goodsName'>{this.props.goodsName}</View>

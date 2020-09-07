@@ -3,8 +3,8 @@ import Taro, { Component } from "@tarojs/taro";
 import { Provider } from "@tarojs/redux";
 import Index from "./pages/index";
 import configStore from "./store";
-import { getToken, getOpenId, queryUserInfo } from "./globalApi";
-import { SAVE_USER_INFO } from "./actions/globalActions";
+import { getToken, getOpenId, queryUserInfo,queryHotGift } from "./global_api";
+import { saveUserInfo,saveHotGift } from "./actions/global_actions";
 import "./custom-theme.scss";
 import "./app.scss";
 
@@ -20,6 +20,7 @@ class App extends Component {
     super(props);
     this.config = {
       pages: [
+        
         "pages/index/index",
         "pages/apartment_list/apartment_list",
         "pages/login/login",
@@ -39,7 +40,10 @@ class App extends Component {
         "pages/user_center/my_exchange",
         "pages/user_center/exchange_detail",
         "pages/user_info/user_info",
-        "pages/user_info/change_number"
+        "pages/user_info/change_number",
+        "pages/user_info/authentication/user_authentication",
+        // 'pages/house_detail/index',
+        // "pages/house_detail/setting_detail/house_setting"
       ],
       window: {
         backgroundTextStyle: "light",
@@ -66,7 +70,8 @@ class App extends Component {
             selectedIconPath: "assets/index/myCenterFocusIcon.png"
           }
         ]
-      }
+      },
+      // navigateToMiniProgramAppIdList:['wxa1439f77c6d06a15']
     };
   }
   componentWillMount() {
@@ -110,16 +115,19 @@ class App extends Component {
           });
           await getOpenId({ code }).then(res => {
             Taro.setStorageSync("currentUserId", res.data.token.openid);
+            queryHotGift().then(result=>{
+              store.dispatch(saveHotGift(result.data||[]));
+            })
           });
           await queryUserInfo().then(({ data }) => {
             if (data) {
-              store.dispatch(SAVE_USER_INFO(data));
+              store.dispatch(saveUserInfo(data));
             }
           });
         }
       },
       fail: function() {
-        Taro.showToast({ title: "网络异常 ，拉取数据失败", icon: "none" });
+        // Taro.showToast({ title: "网络异常 ，拉取数据失败", icon: "none" });
       }
     });
   }

@@ -1,0 +1,5 @@
+export const SET_USER_INFO = 'setUserInfo'
+export const CACHE_GOODS = 'CatchGoods'
+export const EXCHANGE_NUMBER = 'changeGoodsNumber'
+export const UPDATE_USER_INFO = 'updateMsg'
+export const SAVE_HOT_GIFT = 'saveHotGift'

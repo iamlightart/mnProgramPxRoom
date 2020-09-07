@@ -14,7 +14,6 @@ class AuthorityWechatModal extends Component {
     return (
       <AtModal
         isOpened={this.props.showDialog}
-        closeOnClickOverlay={false}
         onClose={this.props.closeModal}
       >
         <View className='closeBtn' onClick={this.props.closeModal}>
@@ -22,16 +21,25 @@ class AuthorityWechatModal extends Component {
         </View>
         <AtModalHeader>温馨提示</AtModalHeader>
         <AtModalContent>
-          <View className='modalContentWrap'>
-            <Text className='hintInfo'>需要使用您的微信昵称，头像信息</Text>
+          <View className='modalContentWrap authority'>
+            <Text className='hintInfo'>使用您的公开信息（昵称，头像等）</Text>
             <View className='buttonWrap'>
               <View className='modalBtn'>
+              <AtButton
+                className='wxModalCancleBtn'
+                size='small'
+                circle
+                onClick={this.props.closeModal}
+              >
+                <Text className=' cancleBtnText'>取消</Text>
+                </AtButton>
                 <AtButton
                   className='wxModalConfirmBtn'
                   openType='getUserInfo'
                   onGetUserInfo={this.props.getMsg}
+                  size='small'
                 >
-                  授权用户信息
+                 <Text className='btnText'> 允许使用</Text>
                 </AtButton>
               </View>
             </View>
